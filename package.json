@@ -1,0 +1,46 @@
+{
+    "name": "",
+    "description": "",
+    "author": "dad",
+    "license": "no",
+    "main": "index.js",
+    "type": "module",
+    "dependencies": {
+        "dotenv": "^16.3.1",
+        "openai": "^3.3.0",
+        "openai-gpt-cost-estimator": "^1.0.0",
+        "openai-gpt-token-counter": "^1.0.3",
+        "prompts": "^2.4.2"
+    },
+    "devDependencies": {
+        "eslint": "^8.29.0",
+        "eslint-config-prettier": "^8.5.0",
+        "prettier": "^2.7.1"
+    },
+    "prettier": {
+        "trailingComma": "es5",
+        "tabWidth": 4,
+        "semi": false,
+        "singleQuote": true
+    },
+    "eslintConfig": {
+        "root": true,
+        "parserOptions": {
+            "ecmaVersion": 12,
+            "sourceType": "module"
+        },
+        "extends": [
+            "eslint:recommended",
+            "prettier"
+        ],
+        "env": {
+            "es2021": true,
+            "node": true,
+            "es6": true
+        },
+        "rules": {
+            "no-unused-vars": "warn",
+            "no-console": "off"
+        }
+    }
+}
