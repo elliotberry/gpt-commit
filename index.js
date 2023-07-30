@@ -5,7 +5,11 @@ import prompts from 'prompts'
 import { exec as originalExec } from 'child_process'
 
 import { estimate, Operation, CompletionModel } from 'openai-gpt-cost-estimator'
-
+/*LATEST MODEL	DESCRIPTION	MAX TOKENS	TRAINING DATA
+gpt-3.5-turbo	Most capable GPT-3.5 model and optimized for chat at 1/10th the cost of text-davinci-003. Will be updated with our latest model iteration 2 weeks after it is released.	4,096 tokens	Up to Sep 2021
+gpt-3.5-turbo-16k
+gpt-4-32k
+gpt-4*/
 let apiKey = process.env.OPENAI_API_KEY
 if (!apiKey) {
     console.error('OPENAI_API_KEY environment variable is not set.')
@@ -84,7 +88,7 @@ const main = async () => {
     // let tokens = count(prompt);
     console.log(result)
     const response = await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo-16k-0613',
+        model: 'gpt-4-0613',
         // prompt: prompt,
         messages: [
             {
@@ -99,7 +103,7 @@ const main = async () => {
     })
 
     const message = response.data.choices[0].message.content.trim()
-
+console.log(response)
     const confirm = await prompts({
         type: 'confirm',
         name: 'value',
