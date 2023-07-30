@@ -61,7 +61,7 @@ const main = async () => {
         apiKey: process.env.OPENAI_API_KEY,
     })
 
-    const prompt = `Generate a succinct summary of the following code changes, with as much detail aas possible, using no more than 50 characters:\n\n`
+    const prompt = `Generate a succinct summary of the following code changes, with as much detail as possible, using no more than 50 characters.\n`
 
     const config = {
         operation: Operation.COMPLETION,
@@ -85,15 +85,18 @@ const main = async () => {
     }
 
     const openai = new OpenAIApi(configuration)
-    // let tokens = count(prompt);
-    console.log(result)
+
     const response = await openai.createChatCompletion({
         model: 'gpt-4-0613',
         // prompt: prompt,
         messages: [
             {
+                role: 'system',
+                content: prompt,
+            },
+            {
                 role: 'user',
-                content: `please write a git commit, given this git diff: \n\n${gitSummary}`,
+                content: gitSummary,
             },
         ],
         max_tokens: 50,
@@ -103,7 +106,7 @@ const main = async () => {
     })
 
     const message = response.data.choices[0].message.content.trim()
-console.log(response)
+    console.log(JSON.stringify(response.data.choices, null, 2))
     const confirm = await prompts({
         type: 'confirm',
         name: 'value',
