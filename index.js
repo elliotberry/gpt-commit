@@ -1,24 +1,40 @@
 #!/usr/bin/env nod
-
-import fs from 'fs';
 import { Configuration, OpenAIApi } from "openai";
 import prompts from 'prompts';
-import dotenv from 'dotenv';
-import { promisify } from 'util';
+
+
 import { exec as originalExec } from 'child_process';
-import count from "openai-gpt-token-counter";
+
 import { estimate, Operation, CompletionModel } from 'openai-gpt-cost-estimator'
 
-dotenv.config();
+
 
 let apiKey = process.env.OPENAI_API_KEY;
+if (!apiKey) {
+  console.error('OPENAI_API_KEY environment variable is not set.');
+  process.exit(1);
+}
+const exec = async function (cmd) {
+  return new Promise(function (res, rej) {
+    originalExec(cmd, (error, stdout, stderr) => {
+          if (error) {
+              console.error(`error: ${error.message}`)
+              rej(error)
+          }
+          if (stderr) {
+              console.error(`stderr: ${stderr}`)
+              rej(stderr)
+          }
 
-const exec = promisify(originalExec);
+          res(stdout)
+      })
+  })
+}
 
 async function getGitSummary() {
   try {
 
-    const { stdout } = await exec(`cd ${process.cwd()} && git diff --cached --stat`);
+    const stdout = await exec(`cd ${process.cwd()} && git diff --cached --stat`);
     const summary = stdout.trim();
 
     if (summary.length === 0) {
@@ -31,7 +47,7 @@ async function getGitSummary() {
     process.exit(1);
   }
 }
-console.log(process.cwd());
+
 const main = async() => {
   const gitSummary = await getGitSummary();
 
@@ -89,7 +105,8 @@ const confirm1 = await prompts({
   });
 
   if (confirm.value) {
-    require('child_process').execSync(`git commit -m "${message}"`);
+    let res = await exec(`git commit -m "${message}"`);
+    console.log(res);
     console.log('Committed with the suggested message.');
   } else {
     console.log('Commit canceled.');
