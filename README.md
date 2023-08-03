@@ -1,13 +1,14 @@
 ## gpt-commit-message
 
 ![](sick-logo.jpg)
-*image_caption*
-# OpenAI Commit Message Generator
+*yes, this, too, was a dumb ai image*
+
+# Commit Message Generator: for when I'm productively lazy
 A command line tool that uses the OpenAI API to generate succinct commit messages with as much detail as possible, using no more than 50 characters.
 
 ## Getting Started
 1. Install dependencies: `npm install`
-2. Set your OpenAI API Key: `export OPENAI_API_KEY=<YOUR_API_KEY>`
+2. Set your OpenAI API Key: `export OPENAI_API_KEY=<YOUR_API_KEY>`. protip: put it in the ol' `.zshrc`
 3. Run the program: `node index.js`
 
 ## Usage
