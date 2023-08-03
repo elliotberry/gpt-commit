@@ -1,7 +1,7 @@
 ## gpt-commit-message
-<figure>
+
 ![](sick-logo.jpg)
-</figure>
+*image_caption*
 # OpenAI Commit Message Generator
 A command line tool that uses the OpenAI API to generate succinct commit messages with as much detail as possible, using no more than 50 characters.
 
