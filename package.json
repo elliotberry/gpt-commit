@@ -1,6 +1,6 @@
 {
     "name": "gpt-commit-message",
-    "description": "",
+    "description": "Make chatGPT write the important documentation, making your projects more opaque, but saving time.",
     "bin": {
         "gptcommit": "./index.js"
     },
@@ -9,14 +9,13 @@
     "main": "index.js",
     "type": "module",
     "dependencies": {
-        "openai": "^3.3.0",
-        "openai-gpt-cost-estimator": "^1.0.0",
+        "openai": "^4.25.0",
         "prompts": "^2.4.2"
     },
     "devDependencies": {
-        "eslint": "^8.46.0",
-        "eslint-config-prettier": "^8.9.0",
-        "prettier": "^3.0.0"
+        "eslint": "^8.56.0",
+        "eslint-config-prettier": "^9.1.0",
+        "prettier": "^3.2.4"
     },
     "prettier": {
         "trailingComma": "es5",
