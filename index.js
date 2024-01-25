@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import OpenAI from 'openai'
 import prompts from 'prompts'
-
+import fs from 'fs/promises'
 import { exec as originalExec } from 'child_process'
-
+var debug = false;
+var config;
 let apiKey = process.env.OPENAI_API_KEY
 if (!apiKey) {
     console.error('OPENAI_API_KEY environment variable is not set.')
@@ -38,7 +39,12 @@ const exec = async function (cmd) {
     })
 }
 
-async function getGitSummary() {
+async function getGitSummary(debug=false) {
+    if (debug) {
+        return `config.json |  4 ++++
+        index.js    | 53 ++++++++++++++++++++++++++++++-----------------------
+        2 files changed, 34 insertions(+), 23 deletions(-)`;
+    }
     try {
         const stdout = await exec(
             `cd ${process.cwd()} && git diff --cached --stat`
@@ -57,18 +63,15 @@ async function getGitSummary() {
 }
 
 const getMessage = async (gitSummary) => {
-    const prompt = `Generate a succinct summary of the following code changes, with as much detail as possible, using no more than 50 characters.\n`
-
     const openai = new OpenAI({
         apiKey: process.env['OPENAI_API_KEY'], // This is the default and can be omitted
     })
     const response = await openai.chat.completions.create({
-        model: 'gpt-4',
-        // prompt: prompt,
+        model: config.model,
         messages: [
             {
                 role: 'system',
-                content: prompt,
+                content: config.prompt,
             },
             {
                 role: 'user',
@@ -98,7 +101,6 @@ const promptLoop = async (gitSummary) => {
     let [message, usage] = await getMessage(gitSummary)
     let cost = await calculateCost(usage.prompt_tokens, usage.completion_tokens)
     let input = await ask(message, cost)
-    let echo = false
     if (input === 'n' || input === 'q' || input === 'no' || input === 'quit') {
         console.log('Commit canceled.')
         process.exit(0)
@@ -112,23 +114,34 @@ const promptLoop = async (gitSummary) => {
 }
 
 const main = async () => {
-    const gitSummary = await getGitSummary()
+    try {
+        if (process.argv.length > 2) {
+            if (process.argv[2] === '--debug') {
+                debug = true
+            }
+        }
+        const configData = await fs.readFile('./config.json')
+        config = JSON.parse(configData)
+        const gitSummary = await getGitSummary(debug)
 
-    if (!gitSummary) {
-        console.log('No changes to commit. Commit canceled.')
-        process.exit(0)
-    }
+        if (!gitSummary) {
+            console.log('No changes to commit. Commit canceled.')
+            process.exit(0)
+        }
 
-    let [confirmedVal, shouldEcho] = await promptLoop(gitSummary)
-    if (shouldEcho) {
-        console.log(confirmedVal)
-        process.exit(0)
-    } else {
-        let res = await exec(`git commit -m "${confirmedVal}"`)
-        console.log(res)
-        console.log('Committed with the suggested message.')
-        process.exit(0)
+        let [confirmedVal, shouldEcho] = await promptLoop(gitSummary)
+        if (shouldEcho) {
+            console.log(confirmedVal)
+            process.exit(0)
+        } else {
+            let res = await exec(`git commit -m "${confirmedVal}"`)
+            console.log(res)
+            console.log('Committed with the suggested message.')
+            process.exit(0)
+        }
+    } catch (error) {
+        console.error(error)
+        process.exit(1)
     }
 }
-
 main()

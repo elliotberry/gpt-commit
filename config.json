@@ -1,0 +1,4 @@
+{
+    "prompt": "Generate a succinct summary of the following code changes, with as much detail as possible, using no more than 50 characters.\n`",
+    "model": "gpt-4"
+}
