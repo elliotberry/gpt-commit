@@ -1,42 +1,16 @@
 #!/usr/bin/env node
-import OpenAI from 'openai'
 import prompts from 'prompts'
-import fs from 'fs/promises'
-import { exec as originalExec } from 'child_process'
-var debug = false;
-var config;
-let apiKey = process.env.OPENAI_API_KEY
-if (!apiKey) {
+import config from './config.js'
+import { calculateCost } from './calculateCost.js';
+import { exec } from './exec.js';
+import { getMessage } from './getMessage.js';
+
+
+
+
+if (!process.env.OPENAI_API_KEY) {
     console.error('OPENAI_API_KEY environment variable is not set.')
     process.exit(1)
-}
-const calculateCost = async (promptTokens, completionTokens) => {
-    let gpt4 = {
-        promptCostPerToken: 0.00003,
-        completionCostPerToken: 0.00006,
-    }
-    let total =
-        promptTokens * gpt4.promptCostPerToken +
-        completionTokens * gpt4.completionCostPerToken
-    return total
-}
-
-//maing this more async, i suppose
-const exec = async function (cmd) {
-    return new Promise(function (res, rej) {
-        originalExec(cmd, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`error: ${error.message}`)
-                rej(error)
-            }
-            if (stderr) {
-                console.error(`stderr: ${stderr}`)
-                rej(stderr)
-            }
-
-            res(stdout)
-        })
-    })
 }
 
 async function getGitSummary(debug=false) {
@@ -47,7 +21,7 @@ async function getGitSummary(debug=false) {
     }
     try {
         const stdout = await exec(
-            `cd ${process.cwd()} && git diff --cached --stat`
+            `cd ${process.cwd()} && ${config.get("diffCommand")}`
         )
         const summary = stdout.trim()
 
@@ -62,33 +36,6 @@ async function getGitSummary(debug=false) {
     }
 }
 
-const getMessage = async (gitSummary) => {
-    const openai = new OpenAI({
-        apiKey: process.env['OPENAI_API_KEY'], // This is the default and can be omitted
-    })
-    const response = await openai.chat.completions.create({
-        model: config.model,
-        messages: [
-            {
-                role: 'system',
-                content: config.prompt,
-            },
-            {
-                role: 'user',
-                content: gitSummary,
-            },
-        ],
-        max_tokens: 500,
-        n: 1,
-        stop: null,
-        temperature: 0.7,
-        stream: false,
-    })
-
-    const message = response.choices[0].message.content.trim()
-    return [message, response.usage]
-}
-
 const ask = async (message, cost) => {
     const confirm = await prompts({
         type: 'text',
@@ -97,6 +44,7 @@ const ask = async (message, cost) => {
     })
     return confirm.value
 }
+
 const promptLoop = async (gitSummary) => {
     let [message, usage] = await getMessage(gitSummary)
     let cost = await calculateCost(usage.prompt_tokens, usage.completion_tokens)
@@ -115,14 +63,7 @@ const promptLoop = async (gitSummary) => {
 
 const main = async () => {
     try {
-        if (process.argv.length > 2) {
-            if (process.argv[2] === '--debug') {
-                debug = true
-            }
-        }
-        const configData = await fs.readFile('./config.json')
-        config = JSON.parse(configData)
-        const gitSummary = await getGitSummary(debug)
+        const gitSummary = await getGitSummary(config.get("debug"))
 
         if (!gitSummary) {
             console.log('No changes to commit. Commit canceled.')
