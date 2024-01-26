@@ -1,12 +1,25 @@
 {
-    "name": "gpt-commit-message",
+    "name": "gpt-commit",
+    "version": "0.1.2",
+    "private": false,
     "description": "Make chatGPT write the important documentation, making your projects more opaque, but saving time.",
     "bin": {
         "gptcommit": "./index.js"
     },
-    "author": "Elliot B",
+    "keywords": [
+        "git",
+        "chatGPT",
+        "commit",
+        "node",
+        "entertainment"
+    ],
+    "os": [
+        "linux",
+        "darwin"
+    ],
+    "author": "ɛʟʟɨօȶ b",
     "license": "The Unlicense",
-    "main": "index.js",
+    "main": "./index.js",
     "type": "module",
     "dependencies": {
         "configstore": "^6.0.0",

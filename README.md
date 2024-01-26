@@ -51,5 +51,6 @@ Under the hood, some baasic opts are described using the `configstore` package, 
     "maxTokens": 500,
     }
     ```
+### Warranty and Liability
 
-    
+This program is provided as-is, and is almost certainly not good. 
