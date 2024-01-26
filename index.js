@@ -1,11 +1,8 @@
 #!/usr/bin/env node
-import prompts from 'prompts'
+
 import config from './config.js'
-import { calculateCost } from './calculateCost.js';
 import { exec } from './exec.js';
-import { getMessage } from './getMessage.js';
-
-
+import promptLoop from "./prompt.js";
 
 
 if (!process.env.OPENAI_API_KEY) {
@@ -33,31 +30,6 @@ async function getGitSummary(debug=false) {
     } catch (error) {
         console.error(`Error while summarizing Git changes: ${error.message}`)
         process.exit(1)
-    }
-}
-
-const ask = async (message, cost) => {
-    const confirm = await prompts({
-        type: 'text',
-        name: 'value',
-        message: `Suggested commit:\n\n"${message}".\n\nThis cost you $${cost}. Do you want to use it? (Y/p/n/r/q) <yes (apply automatically)/print (echo to tty)/no/retry/quit>`,
-    })
-    return confirm.value
-}
-
-const promptLoop = async (gitSummary) => {
-    let [message, usage] = await getMessage(gitSummary)
-    let cost = await calculateCost(usage.prompt_tokens, usage.completion_tokens)
-    let input = await ask(message, cost)
-    if (input === 'n' || input === 'q' || input === 'no' || input === 'quit') {
-        console.log('Commit canceled.')
-        process.exit(0)
-    } else if (input === 'r' || input === 'retry') {
-        return await promptLoop(gitSummary)
-    } else if (input === 'p' || input === 'print') {
-        return [message, true]
-    } else {
-        return [message, false]
     }
 }
 
