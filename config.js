@@ -7,6 +7,8 @@ const config = new Configstore('gpt-commit', {
     diffCommand: 'git diff --cached --stat',
     maxTokens: 500,
     noPrompt: false,
+    showTotalSpend: false,
+    totalSpend: 0
 })
 
 export default config

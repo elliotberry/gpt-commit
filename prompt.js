@@ -1,7 +1,7 @@
 import prompts from 'prompts'
 import { getMessage } from './getMessage.js'
 import { calculateCost } from './calculateCost.js'
-
+import config from './config.js'
 //hell yeah, yes in random languages
 const promptions = {
     yes: [
@@ -41,11 +41,21 @@ const validate = value => {
     }
 }
 const ask = async (message, cost) => {
+    let totalStr = ""
+    let showTotalSpend = config.get('showTotalSpend')
+    if (showTotalSpend) {
+        let totalSpend = config.get('totalSpend')
+        if (totalSpend) {
+            let newTotalSpend = totalSpend + cost
+            config.set('totalSpend', newTotalSpend)
+            totalStr = `(/ $${newTotalSpend} lifetime)`
+        }
+    }
     const confirm = await prompts({
         type: 'text',
         name: 'value',
         validate: value => validate(value),
-        message: `Suggested message:\n\n"${message}"\n\nThis cost you $${cost}. Do you want to use it?\n(Y)es, (p)rint, (n)ew message or (q)uit  [default=yes; apply and commit]`,
+        message: `Suggested message:\n\n"${message}"\n\nThis cost you $${cost}${totalStr}. Do you want to use it?\n(Y)es, (p)rint, (n)ew message or (q)uit  [default=yes; apply and commit]`,
     })
     return confirm.value
 }
