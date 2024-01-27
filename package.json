@@ -1,8 +1,8 @@
 {
     "name": "gpt-commit",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "private": false,
-    "description": "Make chatGPT write the important documentation, making your projects more opaque, but saving time.",
+    "description": "Who has time for commit messages? I've got a 12:pm tee-time, for God's sake.",
     "bin": {
         "gptcommit": "./index.js"
     },
