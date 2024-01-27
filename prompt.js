@@ -45,7 +45,7 @@ const doSpendCalculusAndReturnString = async (cost) => {
         }
         let newTotalSpend = totalSpend + cost
         config.set('totalSpend', newTotalSpend)
-        totalStr = `(/ $${newTotalSpend} lifetime)`
+        totalStr = `($${newTotalSpend} lifetime)`
     }
     return totalStr
 }
@@ -70,6 +70,7 @@ const promptLoop = async (gitSummary, noPrompt = false) => {
     let cost = await calculateCost(usage.prompt_tokens, usage.completion_tokens)
     if (noPrompt) {
         let totalStr = await doSpendCalculusAndReturnString(cost)
+        totalStr = " " + totalStr
         console.log(`This commit cost $${cost}.${totalStr}`)
         return [message, false]
     } else {
