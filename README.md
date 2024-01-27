@@ -7,7 +7,7 @@ _me, at work_
 
 CLI tool that uses OpenAI API to generate succinct commit messages with as much detail as possible, using no more than 50 characters. At least, that's what I'm asking for.
 
-Uses GPT-4 model. Entering the command puts you on the hook for about 1/3 cent usage, so make sure you're not going to overdraft on this one.
+Uses GPT-4 model, or whatever you want in config. Entering the command puts you on the hook for about 1/3 cent usage, so make sure you're not going to overdraft on this one before calling me to haggle over a refund.
 
 ### Getting Started
 
@@ -43,13 +43,13 @@ This cost you $350.55. Do you want to use it?
 Under the hood, some baasic opts are described using the `configstore` package, which on posix systems is stored in `~/.config/configstore/gpt-commit.json`. You can edit this file to change the default behavior of the program. Here's what we got:
 
 ```
-    {
+{
     "prompt": "Generate a succinct summary of the following code changes, with as much detail as possible, using no more than 50 characters.\n`",
     "model": "gpt-4",
     "debug": false,
     "diffCommand": "git diff --cached --stat",
     "maxTokens": 500,
-    }
+}
 ```
 ### Warranty and Liability
 
