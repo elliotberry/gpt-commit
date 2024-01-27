@@ -20,36 +20,32 @@ const promptions = {
     ],
     new: ['n', 'new', 'again', 'retry', '🔄'],
     print: ['p', 'print', 'echo', 'e', '🖨️'],
-    quit: [
-        'q',
-        'quit',
-        'exit',       
-        'no',
-        'non',
-        'nein',
-        'nah'
-    ],
+    quit: ['q', 'quit', 'exit', 'no', 'non', 'nein', 'nah'],
 }
-const validate = value => {
-    let allPrompts = Object.values(promptions).reduce((acc, curr) => acc.concat(curr), []);
+const validate = (value) => {
+    let allPrompts = Object.values(promptions).reduce(
+        (acc, curr) => acc.concat(curr),
+        []
+    )
     console.log(allPrompts.join(', '))
     if (allPrompts.includes(value.toLowerCase())) {
         return true
-    }
-    else {
+    } else {
         return 'Please enter a valid option.'
     }
 }
 const doSpendCalculusAndReturnString = async (cost) => {
-    let totalStr = ""
+    let totalStr = ''
     let showTotalSpend = config.get('showTotalSpend')
+    console.log(showTotalSpend)
     if (showTotalSpend) {
         let totalSpend = config.get('totalSpend')
-        if (totalSpend) {
-            let newTotalSpend = totalSpend + cost
-            config.set('totalSpend', newTotalSpend)
-            totalStr = `(/ $${newTotalSpend} lifetime)`
+        if (!totalSpend) {
+            totalSpend = 0
         }
+        let newTotalSpend = totalSpend + cost
+        config.set('totalSpend', newTotalSpend)
+        totalStr = `(/ $${newTotalSpend} lifetime)`
     }
     return totalStr
 }
@@ -58,7 +54,7 @@ const ask = async (message, cost) => {
     const confirm = await prompts({
         type: 'text',
         name: 'value',
-        validate: value => validate(value),
+        validate: (value) => validate(value),
         message: `Suggested message:\n\n"${message}"\n\nThis cost you $${cost}${totalStr}. Do you want to use it?\n(Y)es, (p)rint, (n)ew message or (q)uit  [default=yes; apply and commit]`,
     })
     return confirm.value
@@ -71,17 +67,12 @@ const ifOption = (input, option) => {
 
 const promptLoop = async (gitSummary, noPrompt = false) => {
     let [message, usage] = await getMessage(gitSummary)
-    let cost = await calculateCost(
-        usage.prompt_tokens,
-        usage.completion_tokens
-    )
+    let cost = await calculateCost(usage.prompt_tokens, usage.completion_tokens)
     if (noPrompt) {
-       
         let totalStr = await doSpendCalculusAndReturnString(cost)
         console.log(`This commit cost $${cost}.${totalStr}`)
         return [message, false]
     } else {
-      
         let input = await ask(message, cost)
         if (ifOption(input, 'quit')) {
             console.log('Commit canceled.')
@@ -95,4 +86,5 @@ const promptLoop = async (gitSummary, noPrompt = false) => {
         }
     }
 }
+
 export default promptLoop
