@@ -42,7 +42,7 @@ This cost you $350.55. Do you want to use it?
 
 Under the hood, some baasic opts are described using the `configstore` package, which on posix systems is stored in `~/.config/configstore/gpt-commit.json`. You can edit this file to change the default behavior of the program. Here's what we got:
 
-    ```json
+```
     {
     "prompt": "Generate a succinct summary of the following code changes, with as much detail as possible, using no more than 50 characters.\n`",
     "model": "gpt-4",
@@ -50,7 +50,7 @@ Under the hood, some baasic opts are described using the `configstore` package, 
     "diffCommand": "git diff --cached --stat",
     "maxTokens": 500,
     }
-    ```
+```
 ### Warranty and Liability
 
 This program is provided as-is, and is almost certainly not good. 
