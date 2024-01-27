@@ -7,7 +7,7 @@ import promptLoop from "./prompt.js";
 
 const commit = async (message) => {
     try {
-        let res = await exec(`git commit -m "${message}"`);
+        let res = await exec(message);
         if (res.indexOf('nothing to commit, working tree clean') > -1) {
             throw new Error('nothing to commit, working tree clean')
         }
