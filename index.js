@@ -35,6 +35,10 @@ async function getGitSummary(debug=false) {
 
 const main = async () => {
     try {
+        let noPrompt = config.get("noPrompt")
+       if (process.argv.join(' ').indexOf('--no-prompt') > -1 || process.argv.join(' ').indexOf('-n') > -1) {
+              noPrompt = true
+        }
         const gitSummary = await getGitSummary(config.get("debug"))
 
         if (!gitSummary) {
@@ -42,13 +46,13 @@ const main = async () => {
             process.exit(0)
         }
 
-        let [confirmedVal, shouldEcho] = await promptLoop(gitSummary)
+        let [confirmedVal, shouldEcho] = await promptLoop(gitSummary, noPrompt)
         if (shouldEcho) {
             console.log(confirmedVal)
             process.exit(0)
         } else {
             let res = await exec(`git commit -m "${confirmedVal}"`)
-            console.log(res)
+         
             console.log('Committed with the suggested message.')
             process.exit(0)
         }
