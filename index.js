@@ -66,7 +66,7 @@ const main = async () => {
         } else {
             await commit(`cd ${process.cwd()} && git commit -m "${confirmedVal}"`)
          
-            console.log('Committed with the suggested message.')
+            console.log('Committed with the message "' + confirmedVal + '".')
             process.exit(0)
         }
     } catch (error) {
