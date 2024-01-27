@@ -37,7 +37,6 @@ const validate = (value) => {
 const doSpendCalculusAndReturnString = async (cost) => {
     let totalStr = ''
     let showTotalSpend = config.get('showTotalSpend')
-    console.log(showTotalSpend)
     if (showTotalSpend) {
         let totalSpend = config.get('totalSpend')
         if (!totalSpend) {
