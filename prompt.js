@@ -40,7 +40,7 @@ const validate = value => {
         return 'Please enter a valid option.'
     }
 }
-const ask = async (message, cost) => {
+const doSpendCalculusAndReturnString = async (cost) => {
     let totalStr = ""
     let showTotalSpend = config.get('showTotalSpend')
     if (showTotalSpend) {
@@ -51,6 +51,10 @@ const ask = async (message, cost) => {
             totalStr = `(/ $${newTotalSpend} lifetime)`
         }
     }
+    return totalStr
+}
+const ask = async (message, cost) => {
+    let totalStr = await doSpendCalculusAndReturnString(cost)
     const confirm = await prompts({
         type: 'text',
         name: 'value',
@@ -67,18 +71,17 @@ const ifOption = (input, option) => {
 
 const promptLoop = async (gitSummary, noPrompt = false) => {
     let [message, usage] = await getMessage(gitSummary)
+    let cost = await calculateCost(
+        usage.prompt_tokens,
+        usage.completion_tokens
+    )
     if (noPrompt) {
-        let cost = await calculateCost(
-            usage.prompt_tokens,
-            usage.completion_tokens
-        )
-        console.log(`This commit cost $${cost}.`)
+       
+        let totalStr = await doSpendCalculusAndReturnString(cost)
+        console.log(`This commit cost $${cost}.${totalStr}`)
         return [message, false]
     } else {
-        let cost = await calculateCost(
-            usage.prompt_tokens,
-            usage.completion_tokens
-        )
+      
         let input = await ask(message, cost)
         if (ifOption(input, 'quit')) {
             console.log('Commit canceled.')
