@@ -5,6 +5,19 @@ import { exec } from './exec.js';
 import promptLoop from "./prompt.js";
 
 
+const commit = async (message) => {
+    try {
+        let res = await exec(`git commit -m "${message}"`);
+        if (res.indexOf('nothing to commit, working tree clean') > -1) {
+            throw new Error('nothing to commit, working tree clean')
+        }
+        return res;
+    } catch (error) {
+        console.error(`Error while committing: ${error.message}`)
+        process.exit(1)
+    }
+}
+
 if (!process.env.OPENAI_API_KEY) {
     console.error('OPENAI_API_KEY environment variable is not set.')
     process.exit(1)
@@ -51,7 +64,7 @@ const main = async () => {
             console.log(confirmedVal)
             process.exit(0)
         } else {
-            let res = await exec(`git commit -m "${confirmedVal}"`)
+            await commit(`git commit -m "${confirmedVal}"`)
          
             console.log('Committed with the suggested message.')
             process.exit(0)
