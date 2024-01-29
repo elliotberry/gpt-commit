@@ -1,17 +1,16 @@
 #!/usr/bin/env node
 
 import config from './config.js'
-import { exec } from './exec.js';
-import promptLoop from "./prompt.js";
-
+import { exec } from './exec.js'
+import promptLoop from './prompt.js'
 
 const commit = async (message) => {
     try {
-        let res = await exec(message);
+        let res = await exec(message)
         if (res.indexOf('nothing to commit, working tree clean') > -1) {
             throw new Error('nothing to commit, working tree clean')
         }
-        return res;
+        return res
     } catch (error) {
         console.error(`Error while committing: ${error.message}`)
         process.exit(1)
@@ -23,15 +22,15 @@ if (!process.env.OPENAI_API_KEY) {
     process.exit(1)
 }
 
-async function getGitSummary(debug=false) {
+async function getGitSummary(debug = false) {
     if (debug) {
         return `config.json |  4 ++++
         index.js    | 53 ++++++++++++++++++++++++++++++-----------------------
-        2 files changed, 34 insertions(+), 23 deletions(-)`;
+        2 files changed, 34 insertions(+), 23 deletions(-)`
     }
     try {
         const stdout = await exec(
-            `cd ${process.cwd()} && ${config.get("diffCommand")}`
+            `cd ${process.cwd()} && ${config.get('diffCommand')}`
         )
         const summary = stdout.trim()
 
@@ -48,11 +47,14 @@ async function getGitSummary(debug=false) {
 
 const main = async () => {
     try {
-        let noPrompt = config.get("noPrompt")
-       if (process.argv.join(' ').indexOf('--no-prompt') > -1 || process.argv.join(' ').indexOf('-n') > -1) {
-              noPrompt = true
+        let noPrompt = config.get('noPrompt')
+        if (
+            process.argv.join(' ').indexOf('--no-prompt') > -1 ||
+            process.argv.join(' ').indexOf('-n') > -1
+        ) {
+            noPrompt = true
         }
-        const gitSummary = await getGitSummary(config.get("debug"))
+        const gitSummary = await getGitSummary(config.get('debug'))
 
         if (!gitSummary) {
             console.log('No changes to commit. Commit canceled.')
@@ -64,8 +66,10 @@ const main = async () => {
             console.log(confirmedVal)
             process.exit(0)
         } else {
-            await commit(`cd ${process.cwd()} && git commit -m "${confirmedVal}"`)
-         
+            await commit(
+                `cd ${process.cwd()} && git commit -m "${confirmedVal}"`
+            )
+
             console.log('Committed with the message "' + confirmedVal + '".')
             process.exit(0)
         }
