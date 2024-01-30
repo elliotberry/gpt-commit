@@ -1,7 +1,12 @@
 import fetch from 'node-fetch'
 import config from './config.js'
 
-export const getMessage = async (gitSummary) => {
+export const getMessage = async (gitSummary, promptTemplate) => {
+    let promptTemplates = config.get('promptTemplates')
+    if (!promptTemplates[promptTemplate]) {
+        throw new Error(`Invalid prompt template: ${promptTemplate}`)
+    }
+    let thisPromptConfig = promptTemplates[promptTemplate]
     try {
         const response = await fetch(
             'https://api.openai.com/v1/chat/completions',
@@ -12,18 +17,18 @@ export const getMessage = async (gitSummary) => {
                     Authorization: `Bearer ${process.env['OPENAI_API_KEY'] || config.get('openAIKey')}`,
                 },
                 body: JSON.stringify({
-                    model: config.get('model'),
+                    model: config.model,
                     messages: [
                         {
                             role: 'system',
-                            content: config.get('prompt'),
+                            content: thisPromptConfig['prompt'],
                         },
                         {
                             role: 'user',
                             content: gitSummary,
                         },
                     ],
-                    max_tokens: config.get('maxTokens'),
+                    max_tokens: thisPromptConfig.maxTokens,
                     n: 1,
                     stop: null,
                     temperature: 0.7,

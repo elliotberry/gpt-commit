@@ -2,6 +2,8 @@ import prompts from 'prompts'
 import { getMessage } from './getMessage.js'
 import { calculateCost } from './calculateCost.js'
 import config from './config.js'
+
+
 //hell yeah, yes in random languages
 const promptions = {
     yes: [
@@ -22,6 +24,7 @@ const promptions = {
     print: ['p', 'print', 'echo', 'e', '🖨️'],
     quit: ['q', 'quit', 'exit', 'no', 'non', 'nein', 'nah'],
 }
+
 const validate = (value) => {
     let allPrompts = Object.values(promptions).reduce(
         (acc, curr) => acc.concat(curr),
@@ -34,6 +37,7 @@ const validate = (value) => {
         return 'Please enter a valid option.'
     }
 }
+
 const doSpendCalculusAndReturnString = async (cost) => {
     let totalStr = ''
     let showTotalSpend = config.get('showTotalSpend')
@@ -48,6 +52,7 @@ const doSpendCalculusAndReturnString = async (cost) => {
     }
     return totalStr
 }
+
 const ask = async (message, cost) => {
     let totalStr = await doSpendCalculusAndReturnString(cost)
     const confirm = await prompts({
@@ -64,13 +69,13 @@ const ifOption = (input, option) => {
     return promptions[option].includes(input.toLowerCase())
 }
 
-const promptLoop = async (gitSummary, noPrompt = false) => {
-    let [message, usage] = await getMessage(gitSummary)
+const promptLoop = async (gitSummary, noPrompt = false, promptTemplate='s', printOnly=false) => {
+    let [message, usage] = await getMessage(gitSummary, promptTemplate)
     let cost = await calculateCost(usage.prompt_tokens, usage.completion_tokens)
-    if (noPrompt) {
+    if (noPrompt || printOnly) {
         let totalStr = await doSpendCalculusAndReturnString(cost)
         totalStr = " " + totalStr
-        console.log(`This commit cost $${cost}.${totalStr}`)
+        printOnly === false && console.log(`This commit cost $${cost}.${totalStr}`)
         return [message, false]
     } else {
         let input = await ask(message, cost)
