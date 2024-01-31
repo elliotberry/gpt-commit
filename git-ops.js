@@ -14,8 +14,8 @@ const commit = async (message) => {
     }
 }
 
-async function getGitSummary(debug = false, promptTemplate = 's') {
-    let promptTemplates = config.get('promptTemplates')
+async function getGitSummary(debug = false, promptTemplate) {
+    console.log(promptTemplate)
     if (debug) {
         return `config.json |  4 ++++
         index.js    | 53 ++++++++++++++++++++++++++++++-----------------------
@@ -23,7 +23,7 @@ async function getGitSummary(debug = false, promptTemplate = 's') {
     }
     try {
         const stdout = await exec(
-            `cd ${process.cwd()} && ${promptTemplates[promptTemplate]['diffCommand']}`
+            `cd ${process.cwd()} && ${promptTemplate.diffCommand}`
         )
         const summary = stdout.trim()
 

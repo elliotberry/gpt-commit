@@ -13,18 +13,14 @@ Uses GPT-4 model, or whatever you want in config. Entering the command puts you 
 
 1. `yarn global add elliotberry/gpt-commit`
 2. Set your OpenAI API Key: `export OPENAI_API_KEY=<YOUR_API_KEY>`. protip: put it in the ol' `.zshrc`
-3. Run the program: `gptcommit` inside a repository folder of your choosing. Make sure you've got some changes staged.
+3. Run the program: `gptcommit` inside a repository folder of your choosing. Make sure you've got some changes staged: `git add ./delete_system32.h`.
 
-### And then...
-
-The program will prompt for a summary of the code changes and will generate a suggested commit message based on the input.
-
-### Output and what you should do about it
+### And then, this:
 
 Example output:
 
 ```
-$ gptcommit
+§ gptcommit
 Suggested commit:
 
 "did basically nothing other than update the readme's spelling".
@@ -34,13 +30,18 @@ This cost you $350.55. Do you want to use it?
 ```
 
 -   Y/yes/sí: will automatically commit the suggested message
--   p/print: will print the suggested message again and then exit.
 -   q/quit: will get you THE HECK OUTTA THERE
 -   n/new: will smash that http request and ask for another commit message with the same input.
 
-### Advanced Configuration: How to make computers work for you
+## Options
 
-Under the hood, some baasic opts are described using the `configstore` package, which on posix systems is stored in `~/.config/configstore/gpt-commit.json`. You can edit this file to change the default behavior of the program. Here's what we got:
+- `-d` (debug): For internal debugging (default: false).
+- `-n` (noPrompt): Applies the commit automatically without user prompt (default: false).
+- `-p` (printOnly): Prints the commit message without user interaction (default: false).
+- `-l` (long): Uses a longer prompt template for more detailed commit messages (slightly more expensive, default: false).
+
+### Advanced Configuration
+Under the hood, some basic opts are described using the `configstore` package, which on posix systems is stored in `~/.config/configstore/gpt-commit.json`. You can edit this file to change the default behavior of the program. Here's what we got:
 
 ```
 {

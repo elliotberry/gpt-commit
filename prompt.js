@@ -21,7 +21,6 @@ const promptions = {
         '✅',
     ],
     new: ['n', 'new', 'again', 'retry', '🔄'],
-    print: ['p', 'print', 'echo', 'e', '🖨️'],
     quit: ['q', 'quit', 'exit', 'no', 'non', 'nein', 'nah'],
 }
 
@@ -69,7 +68,7 @@ const ifOption = (input, option) => {
     return promptions[option].includes(input.toLowerCase())
 }
 
-const promptLoop = async (gitSummary, noPrompt = false, promptTemplate='s', printOnly=false) => {
+const promptLoop = async (gitSummary, noPrompt = false, promptTemplate, printOnly=false) => {
     let [message, usage] = await getMessage(gitSummary, promptTemplate)
     let cost = await calculateCost(usage.prompt_tokens, usage.completion_tokens)
     if (noPrompt || printOnly) {
@@ -84,8 +83,6 @@ const promptLoop = async (gitSummary, noPrompt = false, promptTemplate='s', prin
             process.exit(0)
         } else if (ifOption(input, 'retry')) {
             return await promptLoop(gitSummary, false)
-        } else if (ifOption(input, 'print')) {
-            return [message, true]
         } else {
             return [message, false]
         }

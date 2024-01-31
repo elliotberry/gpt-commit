@@ -2,11 +2,7 @@ import fetch from 'node-fetch'
 import config from './config.js'
 
 export const getMessage = async (gitSummary, promptTemplate) => {
-    let promptTemplates = config.get('promptTemplates')
-    if (!promptTemplates[promptTemplate]) {
-        throw new Error(`Invalid prompt template: ${promptTemplate}`)
-    }
-    let thisPromptConfig = promptTemplates[promptTemplate]
+    
     try {
         const response = await fetch(
             'https://api.openai.com/v1/chat/completions',
@@ -21,14 +17,14 @@ export const getMessage = async (gitSummary, promptTemplate) => {
                     messages: [
                         {
                             role: 'system',
-                            content: thisPromptConfig['prompt'],
+                            content: promptTemplate.prompt,
                         },
                         {
                             role: 'user',
                             content: gitSummary,
                         },
                     ],
-                    max_tokens: thisPromptConfig.maxTokens,
+                    max_tokens: promptTemplate.maxTokens,
                     n: 1,
                     stop: null,
                     temperature: 0.7,

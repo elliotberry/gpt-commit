@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
 import config from './config.js'
-import {getGitSummary, commit} from './git-ops.js'
+import { getGitSummary, commit } from './git-ops.js'
 import promptLoop from './prompt.js'
 import { hideBin } from 'yargs/helpers'
 import yargs from 'yargs'
-
 
 if (!process.env.OPENAI_API_KEY) {
     console.error('OPENAI_API_KEY environment variable is not set.')
@@ -30,30 +29,49 @@ const main = async () => {
             })
             .option('printOnly', {
                 alias: 'p',
-                description: 'do not prompt user, and do not automatically apply commit - just print the commit message',
-                type: 'boolean',
-                default: false
-            })
-            .option('long', {
-                alias: 'l',
-                description: 'use long prompt template - results in a longer, more detailed commit message, and is more expensive',
+                description:
+                    'do not prompt user, and do not automatically apply commit - just print the commit message',
                 type: 'boolean',
                 default: false,
             })
-            .argv
-            let promptTemplate = 's'
-        if (argv.long) {
-            argv.promptTemplate = 'l'
+            .option('long', {
+                alias: 'l',
+                description:
+                    'use long prompt template - results in a longer, more detailed commit message, and is more expensive',
+                type: 'boolean',
+                default: false,
+            }).argv
+
+        let promptTemplateProp = 's'
+        if (argv.long === true) {
+            promptTemplateProp = 'l'
         }
 
-        const gitSummary = await getGitSummary(argv.debug, argv.noPrompt, promptTemplate)
+        let promptTemplates = await config.get('promptTemplates')
+
+        let promptTemplate = promptTemplates[promptTemplateProp]
+        if (!promptTemplate) {
+            throw new Error(`Invalid prompt template: ${promptTemplateProp}`)
+        }
+
+
+
+        const gitSummary = await getGitSummary(
+            argv.debug,
+            promptTemplate
+        )
 
         if (!gitSummary) {
             console.error('No changes to commit. Commit canceled.')
             process.exit(0)
         }
 
-        let [confirmedVal, shouldEcho] = await promptLoop(gitSummary, noPrompt, promptTemplate, argv.printOnly)
+        let [confirmedVal, shouldEcho] = await promptLoop(
+            gitSummary,
+            noPrompt,
+            promptTemplate,
+            argv.printOnly
+        )
         if (shouldEcho) {
             console.log(confirmedVal)
             process.exit(0)
