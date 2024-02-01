@@ -16,7 +16,6 @@ strategy:
             - macos
 jobs:
     make-binary:
-        runs-on: ${{ matrix.os }}
         steps:
             - name: Package into node binary
               uses: lando/pkg-action@v2
