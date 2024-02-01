@@ -14,13 +14,8 @@ const commit = async (message) => {
     }
 }
 
-async function getGitSummary(debug = false, promptTemplate) {
+async function getGitSummary(promptTemplate) {
 
-    if (debug) {
-        return `config.json |  4 ++++
-        index.js    | 53 ++++++++++++++++++++++++++++++-----------------------
-        2 files changed, 34 insertions(+), 23 deletions(-)`
-    }
     try {
         const stdout = await exec(
             `cd ${process.cwd()} && ${promptTemplate.diffCommand}`
@@ -33,8 +28,8 @@ async function getGitSummary(debug = false, promptTemplate) {
 
         return summary
     } catch (error) {
-        console.error(`Error while summarizing Git changes: ${error.message}`)
-        process.exit(1)
+        throw new Error(`Error while summarizing Git changes: ${error.message}`)
+      
     }
 }
 

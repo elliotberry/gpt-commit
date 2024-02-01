@@ -40,9 +40,15 @@ export const getMessage = async (gitSummary, promptTemplate) => {
         }
         const data = await response.json()
         const message = data.choices[0].message.content.trim()
+        if (message === '') {
+            throw new Error('Empty message received from API')
+        }
+        if (message.indexOf('"') !== -1) {
+            message.replace(/"/g, "'")
+        }
+       
         return [message, data.usage]
     } catch (error) {
-        console.error(`Error while getting api message: ${error.message}`)
-        process.exit(1)
+        throw new Error(`Error while getting api message: ${error.message}`)
     }
 }

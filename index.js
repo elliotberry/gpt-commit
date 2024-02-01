@@ -11,12 +11,6 @@ const main = async () => {
     try {
         let noPrompt = config.get('noPrompt')
         const argv = yargs(hideBin(process.argv))
-            .option('debug', {
-                alias: 'd',
-                description: 'internal debugging',
-                type: 'boolean',
-                default: false,
-            })
             .option('noPrompt', {
                 alias: 'n',
                 description: `don't prompt user, apply commit automatically and exit`,
@@ -26,21 +20,42 @@ const main = async () => {
             .option('printOnly', {
                 alias: 'p',
                 description:
-                    'do not prompt user, and do not automatically apply commit - just print the commit message',
+                    `intended for piping elsewhere.\ndon't prompt user, and do not automatically apply commit, or print other info - just print the commit message`,
+                type: 'boolean',
+                default: false,
+            })
+            .option('short', {
+                alias: 's',
+                description:
+                    `use short prompt template\nstandard, one-liner commit message.\nexample: "fix: typo in README.md"`,
+                type: 'boolean',
+                default: true,
+            })
+            .option('cost', {
+                alias: 'c',
+                description: 'show cost of commit, as well as total spend.',
                 type: 'boolean',
                 default: false,
             })
             .option('long', {
                 alias: 'l',
                 description:
-                    'use long prompt template - results in a longer, more detailed commit message, and is more expensive',
+                    'use long prompt template\nresults in a longer, more detailed commit.',
                 type: 'boolean',
                 default: false,
-            }).argv
+            })
+            .conflicts('noPrompt', 'printOnly')
+            .conflicts('short', 'long')
+            .conflicts('cost', 'noPrompt')
+            .usage("Have chatGPT write your commits for you.")
+            .argv
 
         let promptTemplateProp = 's'
         if (argv.long === true) {
             promptTemplateProp = 'l'
+        }
+        if (argv.short === true) {
+            promptTemplateProp = 's'
         }
 
         let promptTemplates = await config.get('promptTemplates')
@@ -53,7 +68,6 @@ const main = async () => {
 
 
         const gitSummary = await getGitSummary(
-            argv.debug,
             promptTemplate
         )
 

@@ -52,13 +52,13 @@ const doSpendCalculusAndReturnString = async (cost) => {
     return totalStr
 }
 
-const ask = async (message, cost) => {
-    let totalStr = await doSpendCalculusAndReturnString(cost)
+const ask = async (message, costStr) => {
+ 
     const confirm = await prompts({
         type: 'text',
         name: 'value',
         validate: (value) => validate(value),
-        message: `Suggested message:\n\n"${message}"\n\nThis cost you $${cost}${totalStr}. Do you want to use it?\n(Y)es, (p)rint, (n)ew message or (q)uit  [default=yes; apply and commit]`,
+        message: `Suggested message:\n\n"${message}"\n\n${costStr} Do you want to use it?\n(Y)es, (n)ew message or (q)uit  [default=yes; (apply and commit)]`,
     })
     return confirm.value
 }
@@ -68,18 +68,22 @@ const ifOption = (input, option) => {
     return promptions[option].includes(input.toLowerCase())
 }
 
-const promptLoop = async (gitSummary, noPrompt = false, promptTemplate, printOnly=false) => {
+const promptLoop = async (gitSummary, noPrompt = false, promptTemplate, printOnly=false, showCost=false) => {
     let [message, usage] = await getMessage(gitSummary, promptTemplate)
     let cost = await calculateCost(usage.prompt_tokens, usage.completion_tokens)
+    let totalStr = await doSpendCalculusAndReturnString(cost)
+    let costStr = `This commit cost $${cost}.${totalStr}`
+    if (noPrompt && showCost) {
+        console.log(costStr)
+    }
     if (noPrompt || printOnly) {
-        let totalStr = await doSpendCalculusAndReturnString(cost)
-        totalStr = " " + totalStr
-        printOnly === false && console.log(`This commit cost $${cost}.${totalStr}`)
-        return [message, false]
+      return [message, false]
     } else {
-        let input = await ask(message, cost)
+        if (showCost === false) {
+            costStr = ''
+        }
+        let input = await ask(message, costStr)
         if (ifOption(input, 'quit')) {
-            console.log('Commit canceled.')
             process.exit(0)
         } else if (ifOption(input, 'retry')) {
             return await promptLoop(gitSummary, false)

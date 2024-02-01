@@ -35,22 +35,31 @@ This cost you $350.55. Do you want to use it?
 
 ## Options
 
-- `-d` (debug): For internal debugging (default: false).
+
 - `-n` (noPrompt): Applies the commit automatically without user prompt (default: false).
 - `-p` (printOnly): Prints the commit message without user interaction (default: false).
+- `s` (short): Uses a shorter prompt template for less detailed commit messages (default: true).
 - `-l` (long): Uses a longer prompt template for more detailed commit messages (slightly more expensive, default: false).
 
-### Advanced Configuration
-Under the hood, some basic opts are described using the `configstore` package, which on posix systems is stored in `~/.config/configstore/gpt-commit.json`. You can edit this file to change the default behavior of the program. Here's what we got:
+## Message Templates
+Right now, the settings for each commit message are established in configstore - so, if you'd like to modify them, you can do so by editing configstore's json file located at `~/.config/configstore/gpt-commit.json`. The defaults, short and long, are as follows:
+
+Short:
+
+```json
+"prompt": "Generate a succinct summary of the following code changes, with as much detail as possible, using no more than 50 characters.",
+"maxTokens": 500,
+"diffCommand": 'git diff --cached --stat'
 
 ```
-{
-    "prompt": "Generate a succinct summary of the following code changes, with as much detail as possible, using no more than 50 characters.\n`",
-    "model": "gpt-4",
-    "debug": false,
-    "diffCommand": "git diff --cached --stat",
-    "maxTokens": 500,
-}
+
+Long:
+  
+```json
+"prompt": 'Generate a summary of the code changes provided with as much detail as possible. Follow this format: commit should include title and body seperated by blank line. title should be imperative, start upper case, no periods. max 50 chars. body should explain what and why, word wrap at 72 chars. Shy away from describing each exact change, and lean more towards describing the whole of the changes in an understandable way, summing them up. Here is the code: \n`',,
+"maxTokens": 4096,
+"diffCommand": 'git diff --cached'
+
 ```
 ### Warranty and Liability
 
