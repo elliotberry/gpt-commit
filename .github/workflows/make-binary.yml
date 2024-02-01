@@ -1,26 +1,34 @@
-runs-on: ubuntu-20.04
-name: Make binary
 on:
-    push:
-        branches:
-            - main
-strategy:
-    matrix:
-        arch:
-            - x64
-            - arm64
-        node-version:
-            - 21
-        os:
-            - linux
-            - macos
+  push:
+    branches:
+      - main
+
 jobs:
-    make-binary:
-        steps:
-            - name: Package into node binary
-              uses: lando/pkg-action@v2
-              with:
-                  entrypoint: ./index.js
-                  arch: ${{ matrix.arch }}
-                  node-version: ${{ matrix.node-version }}
-                  os: ${{ matrix.os }}
+  make-binary:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        arch:
+          - x64
+          - arm64
+        node-version:
+          - 21
+        os:
+          - ubuntu-latest  # Representing Linux
+          - macos-latest   # Representing macOS
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Package into node binary
+        uses: vercel/pkg-fetch@v3
+        with:
+          entrypoint: ./index.js
+          arch: ${{ matrix.arch }}
+          node-version: ${{ matrix.node-version }}
+          os: ${{ matrix.os }}
