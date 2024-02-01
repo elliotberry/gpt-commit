@@ -1,5 +1,5 @@
 import { exec } from './exec.js'
-import config from './config.js'
+
 
 const commit = async (message) => {
     try {
@@ -15,7 +15,7 @@ const commit = async (message) => {
 }
 
 async function getGitSummary(debug = false, promptTemplate) {
-    console.log(promptTemplate)
+
     if (debug) {
         return `config.json |  4 ++++
         index.js    | 53 ++++++++++++++++++++++++++++++-----------------------

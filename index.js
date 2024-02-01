@@ -6,10 +6,6 @@ import promptLoop from './prompt.js'
 import { hideBin } from 'yargs/helpers'
 import yargs from 'yargs'
 
-if (!process.env.OPENAI_API_KEY) {
-    console.error('OPENAI_API_KEY environment variable is not set.')
-    process.exit(1)
-}
 
 const main = async () => {
     try {
@@ -53,7 +49,7 @@ const main = async () => {
         if (!promptTemplate) {
             throw new Error(`Invalid prompt template: ${promptTemplateProp}`)
         }
-
+        noPrompt = argv.noPrompt
 
 
         const gitSummary = await getGitSummary(
