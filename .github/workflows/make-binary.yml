@@ -1,24 +1,27 @@
 runs-on: ubuntu-20.04
 name: Make binary
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 strategy:
-  matrix:
-    arch:
-      - x64
-      - arm64
-    node-version:
-      - 21
-    os:
-      - linux
-      - macos
-steps:
-  - name: Package into node binary
-    uses: lando/pkg-action@v2
-    with:
-      entrypoint: ./index.js
-      arch: ${{ matrix.arch }}
-      node-version: ${{ matrix.node-version }}
-      os: ${{ matrix.os }}
+    matrix:
+        arch:
+            - x64
+            - arm64
+        node-version:
+            - 21
+        os:
+            - linux
+            - macos
+jobs:
+    make-binary:
+        runs-on: ${{ matrix.os }}
+        steps:
+            - name: Package into node binary
+              uses: lando/pkg-action@v2
+              with:
+                  entrypoint: ./index.js
+                  arch: ${{ matrix.arch }}
+                  node-version: ${{ matrix.node-version }}
+                  os: ${{ matrix.os }}
