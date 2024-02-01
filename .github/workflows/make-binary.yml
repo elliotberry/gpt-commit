@@ -14,8 +14,8 @@ jobs:
         node-version:
           - 21
         os:
-          - ubuntu-latest  # Representing Linux
-          - macos-latest   # Representing macOS
+          - linux
+          - macos
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
