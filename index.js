@@ -24,20 +24,20 @@ const main = async () => {
                 alias: 's',
                 description: `use short prompt template\nstandard, one-liner commit message.\nexample: "fix: typo in README.md"`,
                 type: 'boolean',
-                default: true,
+                default: false,
             })
             .option('cost', {
                 alias: 'c',
                 description: 'show cost of commit, as well as total spend.',
                 type: 'boolean',
-                default: false,
+                default: false
             })
             .option('long', {
                 alias: 'l',
                 description:
                     'use long prompt template\nresults in a longer, more detailed commit.',
                 type: 'boolean',
-                default: false,
+                default: false
             })
             .check((argv) => {
                 if (argv.noPrompt && argv.printOnly) {
@@ -45,7 +45,7 @@ const main = async () => {
                         '--noPrompt and --printOnly are mutually exclusive, as they handle the\nunprompted behavior differently.\nIf you want to print the commit message without prompting, use --printOnly.\nIf you want to commit without prompting, use --noPrompt.'
                     )
                 }
-                if (argv.short && argv.long) {
+                if (argv.short === true && argv.long === true) {
                     throw new Error(
                         '--short and --long are mutually exclusive.'
                     )
@@ -65,9 +65,7 @@ const main = async () => {
         if (argv.long === true) {
             promptTemplateProp = 'l'
         }
-        if (argv.short === true) {
-            promptTemplateProp = 's'
-        }
+       
 
         let promptTemplates = await config.get('promptTemplates')
 
