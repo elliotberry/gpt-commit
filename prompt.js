@@ -64,23 +64,29 @@ const ask = async (message, costStr) => {
 const ifOption = (input, option) => {
     return promptions[option].includes(input.toLowerCase())
 }
-
+const cleanupMessage = async (message) => {
+    if (message.indexOf('"') !== -1) {
+        message = message.replace(/"/g, "'")
+    }
+    return message
+}
 //return array of message and boolean of whether to echo the message
 const promptLoop = async (
     gitSummary,
-    noPrompt = false,
+    noPrompt,
     promptTemplate,
-    printOnly = false,
-    showCost = false
+    printOnly,
+    showCost
 ) => {
     try {
         let [message, usage] = await getMessage(gitSummary, promptTemplate)
+        message = await cleanupMessage(message)
         let cost = await calculateCost(
             usage.prompt_tokens,
             usage.completion_tokens
         )
         let totalStr = await doSpendCalculusAndReturnString(cost)
-        let costStr = `This commit cost $${cost}.${totalStr}`
+        let costStr = `This commit cost $${cost} (${totalStr} lifetime)`
         if (noPrompt && showCost) {
             console.log(costStr)
         }
@@ -93,8 +99,12 @@ const promptLoop = async (
             let input = await ask(message, costStr)
             if (ifOption(input, 'quit')) {
                 process.exit(0)
-            } else if (ifOption(input, 'retry')) {
-                return await promptLoop(gitSummary, false)
+            } else if (ifOption(input, 'new')) {
+                return await promptLoop(gitSummary,
+                    noPrompt,
+                    promptTemplate,
+                    printOnly,
+                    showCost)
             } else {
                 return [message, false]
             }

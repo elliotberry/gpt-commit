@@ -19,8 +19,8 @@ async function getGitSummary(promptTemplate) {
         )
         const summary = stdout.trim()
 
-        if (summary.length === 0) {
-            return null
+        if (summary.length === 0 || summary === "''" || summary === '""' || summary === ' ' || !summary) {
+            throw new Error(`received empty git summary. This is likely an issue with the diff command.`)
         }
 
         return summary

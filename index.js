@@ -5,6 +5,23 @@ import { getGitSummary, commit } from './git-ops.js'
 import promptLoop from './prompt.js'
 import yargs from 'yargs/yargs'
 
+
+const resolvePromptTemplate = async (argv) => {
+    let promptTemplateProp = 's'
+    if (argv.long === true) {
+        promptTemplateProp = 'l'
+    }
+   
+
+    let promptTemplates = await config.get('promptTemplates')
+
+    let promptTemplate = promptTemplates[promptTemplateProp]
+    if (!promptTemplate) {
+        throw new Error(`Invalid prompt template: ${promptTemplateProp}`)
+    }
+    return promptTemplate;
+}
+
 const main = async () => {
     try {
         const argv = yargs(process.argv.slice(2))
@@ -61,32 +78,18 @@ const main = async () => {
             .help('help').alias('help', 'h')
             .parse()
 
-        let promptTemplateProp = 's'
-        if (argv.long === true) {
-            promptTemplateProp = 'l'
-        }
-       
 
-        let promptTemplates = await config.get('promptTemplates')
-
-        let promptTemplate = promptTemplates[promptTemplateProp]
-        if (!promptTemplate) {
-            throw new Error(`Invalid prompt template: ${promptTemplateProp}`)
-        }
-        let noPrompt = argv.noPrompt
+        const promptTemplate = await resolvePromptTemplate(argv)
 
         const gitSummary = await getGitSummary(promptTemplate)
 
-        if (!gitSummary) {
-            console.error('No changes to commit. Commit canceled.')
-            process.exit(0)
-        }
 
         let [confirmedVal, shouldEcho] = await promptLoop(
             gitSummary,
-            noPrompt,
+            argv.noPrompt,
             promptTemplate,
-            argv.printOnly
+            argv.printOnly,
+            argv.cost
         )
         if (shouldEcho) {
             console.log(confirmedVal)
