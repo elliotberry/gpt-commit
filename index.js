@@ -99,7 +99,7 @@ const main = async () => {
             process.exit(0)
         }
     } catch (error) {
-        console.error(error)
+        console.error(`Error: ${error.message}`)
         process.exit(1)
     }
 }

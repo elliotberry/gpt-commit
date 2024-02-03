@@ -3,7 +3,6 @@ import { getMessage } from './getMessage.js'
 import { calculateCost } from './calculateCost.js'
 import config from './config.js'
 
-
 //hell yeah, yes in random languages
 const promptions = {
     yes: [
@@ -29,7 +28,6 @@ const validate = (value) => {
         (acc, curr) => acc.concat(curr),
         []
     )
-    console.log(allPrompts.join(', '))
     if (allPrompts.includes(value.toLowerCase())) {
         return true
     } else {
@@ -53,7 +51,6 @@ const doSpendCalculusAndReturnString = async (cost) => {
 }
 
 const ask = async (message, costStr) => {
- 
     const confirm = await prompts({
         type: 'text',
         name: 'value',
@@ -68,28 +65,42 @@ const ifOption = (input, option) => {
     return promptions[option].includes(input.toLowerCase())
 }
 
-const promptLoop = async (gitSummary, noPrompt = false, promptTemplate, printOnly=false, showCost=false) => {
-    let [message, usage] = await getMessage(gitSummary, promptTemplate)
-    let cost = await calculateCost(usage.prompt_tokens, usage.completion_tokens)
-    let totalStr = await doSpendCalculusAndReturnString(cost)
-    let costStr = `This commit cost $${cost}.${totalStr}`
-    if (noPrompt && showCost) {
-        console.log(costStr)
-    }
-    if (noPrompt || printOnly) {
-      return [message, false]
-    } else {
-        if (showCost === false) {
-            costStr = ''
+//return array of message and boolean of whether to echo the message
+const promptLoop = async (
+    gitSummary,
+    noPrompt = false,
+    promptTemplate,
+    printOnly = false,
+    showCost = false
+) => {
+    try {
+        let [message, usage] = await getMessage(gitSummary, promptTemplate)
+        let cost = await calculateCost(
+            usage.prompt_tokens,
+            usage.completion_tokens
+        )
+        let totalStr = await doSpendCalculusAndReturnString(cost)
+        let costStr = `This commit cost $${cost}.${totalStr}`
+        if (noPrompt && showCost) {
+            console.log(costStr)
         }
-        let input = await ask(message, costStr)
-        if (ifOption(input, 'quit')) {
-            process.exit(0)
-        } else if (ifOption(input, 'retry')) {
-            return await promptLoop(gitSummary, false)
-        } else {
+        if (noPrompt || printOnly) {
             return [message, false]
+        } else {
+            if (showCost === false) {
+                costStr = ''
+            }
+            let input = await ask(message, costStr)
+            if (ifOption(input, 'quit')) {
+                process.exit(0)
+            } else if (ifOption(input, 'retry')) {
+                return await promptLoop(gitSummary, false)
+            } else {
+                return [message, false]
+            }
         }
+    } catch (error) {
+        throw new Error(`in prompt loop: ${error.message}`)
     }
 }
 

@@ -36,7 +36,7 @@ export const getMessage = async (gitSummary, promptTemplate) => {
             }
         )
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
+            throw new Error(`HTTP status: ${response.status}  ${response.statusText}- this is likely an issue with the API key.`)
         }
         const data = await response.json()
         const message = data.choices[0].message.content.trim()
@@ -49,6 +49,6 @@ export const getMessage = async (gitSummary, promptTemplate) => {
        
         return [message, data.usage]
     } catch (error) {
-        throw new Error(`Error while getting api message: ${error.message}`)
+        throw new Error(`in API request: ${error.message}`)
     }
 }

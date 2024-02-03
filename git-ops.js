@@ -1,6 +1,5 @@
 import { exec } from './exec.js'
 
-
 const commit = async (message) => {
     try {
         let res = await exec(message)
@@ -9,13 +8,11 @@ const commit = async (message) => {
         }
         return res
     } catch (error) {
-        console.error(`Error while committing: ${error.message}`)
-        process.exit(1)
+        throw new Error(`in commit command - ${error.message}`)
     }
 }
 
 async function getGitSummary(promptTemplate) {
-
     try {
         const stdout = await exec(
             `cd ${process.cwd()} && ${promptTemplate.diffCommand}`
@@ -28,8 +25,7 @@ async function getGitSummary(promptTemplate) {
 
         return summary
     } catch (error) {
-        throw new Error(`Error while summarizing Git changes: ${error.message}`)
-      
+        throw new Error(`in getGitSummary: ${error.message}`)
     }
 }
 

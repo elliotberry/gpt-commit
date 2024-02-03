@@ -4,12 +4,11 @@ export const exec = async function (cmd) {
     return new Promise(function (res, rej) {
         originalExec(cmd, (error, stdout, stderr) => {
             if (error) {
-                console.error(`error: ${error.message}`);
-                rej(error);
+                rej(`error in exec: ${error.message}`);
             }
             if (stderr) {
-                console.error(`stderr: ${stderr}`);
-                rej(stderr);
+               
+                rej(`stderr in exec: ${stderr}`);
             }
 
             res(stdout);
