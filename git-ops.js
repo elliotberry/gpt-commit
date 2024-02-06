@@ -1,14 +1,15 @@
 import { exec } from './exec.js'
 
 const commit = async (message) => {
+    let res;
     try {
-        let res = await exec(message)
+        res = await exec(message)
         if (res.indexOf('nothing to commit, working tree clean') > -1) {
             throw new Error('nothing to commit, working tree clean')
         }
         return res
     } catch (error) {
-        throw new Error(`in commit command - ${error.message}`)
+        throw new Error(`in commit command - ${error.message} - result: ${res}`)
     }
 }
 
