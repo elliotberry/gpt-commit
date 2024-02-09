@@ -1,17 +1,6 @@
 import { exec } from './exec.js'
 
-const commit = async (message) => {
-    let res;
-    try {
-        res = await exec(message)
-        if (res.indexOf('nothing to commit, working tree clean') > -1) {
-            throw new Error('nothing to commit, working tree clean')
-        }
-        return res
-    } catch (error) {
-        throw new Error(`in commit command - ${error.message} - result: ${res}`)
-    }
-}
+
 
 async function getGitSummary(promptTemplate) {
     try {
@@ -30,4 +19,4 @@ async function getGitSummary(promptTemplate) {
     }
 }
 
-export { getGitSummary, commit }
+export { getGitSummary }

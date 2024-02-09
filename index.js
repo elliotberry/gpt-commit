@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import config from './config.js'
-import { getGitSummary, commit } from './git-ops.js'
+import { getGitSummary} from './git-ops.js'
 import promptLoop from './prompt.js'
 import yargs from 'yargs/yargs'
-
+import { exec } from './exec.js'
 
 const resolvePromptTemplate = async (argv) => {
     let promptTemplateProp = 's'
@@ -95,7 +95,7 @@ const main = async () => {
             console.log(confirmedVal)
             process.exit(0)
         } else {
-            await commit(
+            await exec(
                 `cd ${process.cwd()} && git commit -m "${confirmedVal}"`
             )
             console.log('Committed with the message "' + confirmedVal + '".')
