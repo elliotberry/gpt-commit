@@ -4,6 +4,7 @@ import { exec } from './exec.js'
 
 async function getGitSummary(promptTemplate) {
     try {
+    
         const stdout = await exec(
             `cd ${process.cwd()} && ${promptTemplate.diffCommand}`
         )

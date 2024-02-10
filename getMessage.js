@@ -1,5 +1,6 @@
-import fetch from 'node-fetch'
+
 import config from './config.js'
+import makeOpenAIMessages from './make-openai-messages.js'
 
 export const getMessage = async (gitSummary, promptTemplate) => {
     let apiKey = process.env['OPENAI_API_KEY'] || config.get('openAIKey')
@@ -17,16 +18,7 @@ export const getMessage = async (gitSummary, promptTemplate) => {
                 },
                 body: JSON.stringify({
                     model: config.get('model'),
-                    messages: [
-                        {
-                            role: 'system',
-                            content: promptTemplate.prompt,
-                        },
-                        {
-                            role: 'user',
-                            content: gitSummary,
-                        },
-                    ],
+                    messages: makeOpenAIMessages(promptTemplate, gitSummary),
                     max_tokens: promptTemplate.maxTokens,
                     n: 1,
                     stop: null,

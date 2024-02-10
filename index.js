@@ -5,7 +5,8 @@ import { getGitSummary} from './git-ops.js'
 import promptLoop from './prompt.js'
 import yargs from 'yargs/yargs'
 import { exec } from './exec.js'
-
+import tokenInfo from './tokens.js'
+import makeOpenAIMessages from './make-openai-messages.js'
 const resolvePromptTemplate = async (argv) => {
     let promptTemplateProp = 's'
     if (argv.long === true) {
@@ -82,7 +83,12 @@ const main = async () => {
         const promptTemplate = await resolvePromptTemplate(argv)
 
         const gitSummary = await getGitSummary(promptTemplate)
-
+        let messages = makeOpenAIMessages(promptTemplate, gitSummary)
+        let messagesTotal = await tokenInfo(messages[0].content) + await tokenInfo(messages[1].content)
+        
+        if (messagesTotal > promptTemplate.maxTokens) {
+            throw new Error(`Message exceeds token limit. ${messagesTotal} tokens used with this commit, ${promptTemplate.maxTokens} available.`)
+        }
 
         let [confirmedVal, shouldEcho] = await promptLoop(
             gitSummary,

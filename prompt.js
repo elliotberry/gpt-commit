@@ -54,8 +54,12 @@ const ask = async (message, costStr) => {
     const confirm = await prompts({
         type: 'text',
         name: 'value',
+        onState: (state) => {
+            console.log("   w   wrfqwrf")
+            console.log(state)
+        },
         validate: (value) => validate(value),
-        message: `Suggested message:\n\n"${message}"\n\n${costStr} Do you want to use it?\n(Y)es, (n)ew message or (q)uit  [default=yes; (apply and commit)]`,
+        message: `Suggested message:\n\n"${message}"\n\n${costStr}Do you want to use it?\n(Y)es, (n)ew message or (q)uit  [default=yes; (apply and commit)]`,
     })
     return confirm.value
 }
