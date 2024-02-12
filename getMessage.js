@@ -1,4 +1,3 @@
-
 import config from './config.js'
 import makeOpenAIMessages from './make-openai-messages.js'
 
