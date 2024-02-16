@@ -9,6 +9,7 @@ import { exec } from './exec.js'
 import {checkTotal} from './tokens.js'
 import makeOpenAIMessages from './make-openai-messages.js'
 
+
 const resolvePromptTemplate = async (argv) => {
     let promptTemplateProp = 's'
     if (argv.long === true) {
@@ -28,7 +29,7 @@ const main = async () => {
     try {
         const argv = yargs(process.argv.slice(2))
             .option('interactive', {
-                alias: 'n',
+                alias: 'i',
                 description: `Ask for confirmation before committing message.`,
                 type: 'boolean',
                 default: false,
