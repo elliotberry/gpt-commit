@@ -1,3 +1,0 @@
-git diff --compact-summary
---numstat
---compact-summary

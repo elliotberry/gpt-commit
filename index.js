@@ -1,18 +1,19 @@
 #!/usr/bin/env node
 
 import config from './config.js'
-import { getGitSummary} from './git-ops.js'
+import { getGitSummary } from './git-ops.js'
 import promptLoop from './prompt.js'
+import { getOneMessage } from './return-message-info.js'
 import yargs from 'yargs/yargs'
 import { exec } from './exec.js'
-import tokenInfo from './tokens.js'
+import {checkTotal} from './tokens.js'
 import makeOpenAIMessages from './make-openai-messages.js'
+
 const resolvePromptTemplate = async (argv) => {
     let promptTemplateProp = 's'
     if (argv.long === true) {
         promptTemplateProp = 'l'
     }
-   
 
     let promptTemplates = await config.get('promptTemplates')
 
@@ -20,21 +21,21 @@ const resolvePromptTemplate = async (argv) => {
     if (!promptTemplate) {
         throw new Error(`Invalid prompt template: ${promptTemplateProp}`)
     }
-    return promptTemplate;
+    return promptTemplate
 }
 
 const main = async () => {
     try {
         const argv = yargs(process.argv.slice(2))
-            .option('noPrompt', {
+            .option('interactive', {
                 alias: 'n',
-                description: `don't prompt user, apply commit automatically.`,
+                description: `Ask for confirmation before committing message.`,
                 type: 'boolean',
                 default: false,
             })
             .option('printOnly', {
                 alias: 'p',
-                description: `don't prompt user, don't apply commit. intended for piping elsewhere.`,
+                description: `don't apply commit. intended for piping elsewhere.`,
                 type: 'boolean',
                 default: false,
             })
@@ -44,18 +45,12 @@ const main = async () => {
                 type: 'boolean',
                 default: false,
             })
-            .option('cost', {
-                alias: 'c',
-                description: 'show cost of commit, as well as total spend.',
-                type: 'boolean',
-                default: true,
-            })
             .option('long', {
                 alias: 'l',
                 description:
                     'use long prompt template\nresults in a longer, more detailed commit.',
                 type: 'boolean',
-                default: false
+                default: false,
             })
             .check((argv) => {
                 if (argv.noPrompt && argv.printOnly) {
@@ -68,43 +63,45 @@ const main = async () => {
                         '--short and --long are mutually exclusive.'
                     )
                 }
-                if (argv.cost && argv.noPrompt) {
-                    throw new Error(
-                        '--cost and --noPrompt are mutually exclusive, since showing the cost requires printing more information.'
-                    )
-                }
                 return true
             })
-            .usage('Have chatGPT write your commits for you.\n\nUsage: $0 [options]')
-            .help('help').alias('help', 'h')
+            .usage(
+                'Have chatGPT write your commits for you.\n\nUsage: $0 [options]'
+            )
+            .help('help')
+            .alias('help', 'h')
             .parse()
-
 
         const promptTemplate = await resolvePromptTemplate(argv)
 
         const gitSummary = await getGitSummary(promptTemplate)
         let messages = makeOpenAIMessages(promptTemplate, gitSummary)
-        let messagesTotal = await tokenInfo(messages[0].content) + await tokenInfo(messages[1].content)
-        
-        if (messagesTotal > promptTemplate.maxTokens) {
-            throw new Error(`Message exceeds token limit. ${messagesTotal} tokens used with this commit, ${promptTemplate.maxTokens} available.`)
-        }
+        await checkTotal(messages, promptTemplate.maxTokens)
 
-        let [confirmedVal, shouldEcho] = await promptLoop(
-            gitSummary,
-            argv.noPrompt,
-            promptTemplate,
-            argv.printOnly,
-            argv.cost
-        )
-        if (shouldEcho) {
-            console.log(confirmedVal)
-            process.exit(0)
-        } else {
-            await exec(
-                `cd ${process.cwd()} && git commit -m "${confirmedVal}"`
+        if (!argv.interactive) {
+            let [message, costStr] = await getOneMessage(
+                promptTemplate,
+                gitSummary
             )
-            console.log('Committed with the message "' + confirmedVal + '".')
+            //If we just want our message, log it and it only.
+            if (argv.p) {
+                console.log(message)
+                process.exit(0)
+            }
+            //otherwise, automatically commit it.
+            else {
+                await exec(`cd ${process.cwd()} && git commit -m "${message}"`)
+                console.log(costStr)
+                console.log('Committed with the message "' + message + '".')
+                process.exit(0)
+            }
+        } else {
+            let finalMessage = await promptLoop(
+                gitSummary,
+                promptTemplate
+            )
+            await exec(`cd ${process.cwd()} && git commit -m "${finalMessage}"`)
+            console.log('Committed with the message "' + finalMessage + '".')
             process.exit(0)
         }
     } catch (error) {

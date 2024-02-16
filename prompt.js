@@ -1,7 +1,5 @@
 import prompts from 'prompts'
-import { getMessage } from './getMessage.js'
-import { calculateCost } from './calculateCost.js'
-import config from './config.js'
+import { getOneMessage } from './return-message-info.js'
 
 //hell yeah, yes in random languages
 const promptions = {
@@ -35,23 +33,8 @@ const validate = (value) => {
     }
 }
 
-const doSpendCalculusAndReturnString = async (cost) => {
-    let totalStr = ''
-    let showTotalSpend = config.get('showTotalSpend')
-    if (showTotalSpend) {
-        let totalSpend = config.get('totalSpend')
-        if (!totalSpend) {
-            totalSpend = 0
-        }
-        let newTotalSpend = totalSpend + cost
-        config.set('totalSpend', newTotalSpend)
-        totalStr = newTotalSpend.toFixed(3)
-    }
-    return totalStr
-}
 
 const ask = async (message, costStr) => {
-
     const confirm = await prompts({
         type: 'text',
         name: 'value',
@@ -65,51 +48,24 @@ const ask = async (message, costStr) => {
 const ifOption = (input, option) => {
     return promptions[option].includes(input.toLowerCase())
 }
-const cleanupMessage = async (message) => {
-    if (message.indexOf('"') !== -1) {
-        message = message.replace(/"/g, "'")
-    }
-    return message
-}
-//return array of message and boolean of whether to echo the message
-const promptLoop = async (
-    gitSummary,
-    noPrompt,
-    promptTemplate,
-    printOnly,
-    showCost
-) => {
-    try {
-        let [message, usage] = await getMessage(gitSummary, promptTemplate)
-        message = await cleanupMessage(message)
-        let cost = await calculateCost(
-            usage.prompt_tokens,
-            usage.completion_tokens
-        )
-        let totalStr = await doSpendCalculusAndReturnString(cost)
-        let costStr = `Cost: $${cost} ($${totalStr} lifetime)`
 
-        if (noPrompt && showCost) {
-            console.log(costStr)
-        }
-        if (noPrompt || printOnly) {
-            return [message, false]
+
+
+//return array of message and boolean of whether to echo the message
+const promptLoop = async (gitSummary, promptTemplate) => {
+    try {
+        let [message, costStr] = await getOneMessage(promptTemplate, gitSummary)
+
+        let input = await ask(message, costStr)
+        if (ifOption(input, 'quit')) {
+            process.exit(0)
+        } else if (ifOption(input, 'new')) {
+            return await promptLoop(
+                gitSummary,
+                promptTemplate
+            )
         } else {
-            if (showCost === false) {
-                costStr = ''
-            }
-            let input = await ask(message, costStr)
-            if (ifOption(input, 'quit')) {
-                process.exit(0)
-            } else if (ifOption(input, 'new')) {
-                return await promptLoop(gitSummary,
-                    noPrompt,
-                    promptTemplate,
-                    printOnly,
-                    showCost)
-            } else {
-                return [message, false]
-            }
+            return message
         }
     } catch (error) {
         throw new Error(`in prompt loop: ${error.message}`)

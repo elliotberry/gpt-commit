@@ -1,3 +1,6 @@
+//calculateCost for a call to OpenAI's GPT-4 API
+//tokens -> $
+
 export const calculateCost = async (promptTokens, completionTokens) => {
     let gpt4 = {
         promptCostPerToken: 0.00003,
