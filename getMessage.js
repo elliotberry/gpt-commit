@@ -27,7 +27,9 @@ export const getMessage = async (gitSummary, promptTemplate) => {
             }
         )
         if (!response.ok) {
-            throw new Error(`HTTP status: ${response.status}  ${response.statusText}- this is likely an issue with the API key.`)
+            throw new Error(
+                `HTTP status: ${response.status}  ${response.statusText}- this is likely an issue with the API key.`
+            )
         }
         const data = await response.json()
         const message = data.choices[0].message.content.trim()
@@ -37,7 +39,7 @@ export const getMessage = async (gitSummary, promptTemplate) => {
         if (message.indexOf('"') !== -1) {
             message.replace(/"/g, "'")
         }
-       
+
         return [message, data.usage]
     } catch (error) {
         throw new Error(`in API request: ${error.message}`)

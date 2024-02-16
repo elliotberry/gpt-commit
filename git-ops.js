@@ -1,5 +1,12 @@
 import { exec } from './exec.js'
 
+/**
+ * Retrieves the git summary using the provided prompt template.
+ *
+ * @param {Object} promptTemplate - The prompt template object.
+ * @returns {Promise<string>} The git summary.
+ * @throws {Error} If the git summary is empty or there is an error retrieving it.
+ */
 async function getGitSummary(promptTemplate) {
     try {
     

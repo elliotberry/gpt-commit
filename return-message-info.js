@@ -3,6 +3,11 @@ import { calculateCost } from './calculateCost.js'
 import config from './config.js'
 
 
+/**
+ * Calculates the spend and returns it as a string to be console logged.
+ * @param {number} cost - The cost to be added to the total spend.
+ * @returns {string} - The total spend as a string.
+ */
 const doSpendCalculusAndReturnString = async (cost) => {
     let totalStr = ''
     let showTotalSpend = config.get('showTotalSpend')
@@ -18,6 +23,12 @@ const doSpendCalculusAndReturnString = async (cost) => {
     return totalStr
 }
 
+/**
+ * Replaces double quotes with single quotes in the given message.
+ * 
+ * @param {string} message - The message to be cleaned up.
+ * @returns {Promise<string>} The cleaned up message.
+ */
 const cleanupMessage = async (message) => {
     if (message.indexOf('"') !== -1) {
         message = message.replace(/"/g, "'")

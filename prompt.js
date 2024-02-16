@@ -52,6 +52,13 @@ const ifOption = (input, option) => {
 
 
 //return array of message and boolean of whether to echo the message
+/**
+ * Executes a loop for prompting the user with a message and receiving input.
+ * @param {string} gitSummary - The summary of the git changes.
+ * @param {string} promptTemplate - The template for the prompt message.
+ * @returns {Promise<string>} The user's input message.
+ * @throws {Error} If an error occurs during the prompt loop.
+ */
 const promptLoop = async (gitSummary, promptTemplate) => {
     try {
         let [message, costStr] = await getOneMessage(promptTemplate, gitSummary)

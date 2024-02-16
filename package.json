@@ -1,6 +1,6 @@
 {
     "name": "gpt-commit",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "private": false,
     "description": "Who has time for commit messages? I've got a 12:pm tee-time, for God's sake.",
     "bin": {
@@ -36,7 +36,7 @@
     "devDependencies": {
         "eslint": "^8.56.0",
         "eslint-config-prettier": "^9.1.0",
-        "prettier": "^3.2.4"
+        "prettier": "^3.2.5"
     },
     "prettier": {
         "trailingComma": "es5",

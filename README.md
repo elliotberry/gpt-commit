@@ -5,9 +5,11 @@ _me, at work_
 
 ## What is?
 
-CLI tool that uses OpenAI API to generate succinct commit messages with as much detail as possible, using no more than 50 characters. At least, that's what I'm asking for.
+CLI tool that uses GPT-4 to auto-generate succinct commit messages by reading staged changes.
 
-Uses GPT-4 model, or whatever you want in config. Entering the command puts you on the hook for about 1/3 cent usage, so make sure you're not going to overdraft on this one before calling me to haggle over a refund.
+Uses GPT-4 model by default, although you can edit this.
+
+Entering the command puts you on the hook for about 1/3 cent usage, so make sure you're not going to overdraft on this one before calling me to haggle over a refund.
 
 ### Getting Started
 
@@ -36,7 +38,7 @@ This cost you $350.55. Do you want to use it?
 ## Options
 
 
-- `-n` (noPrompt): Applies the commit automatically without user prompt (default: false).
+- `-i` (interactive): Shows user prompt for commit message (default: false).
 - `-p` (printOnly): Prints the commit message without user interaction (default: false).
 - `s` (short): Uses a shorter prompt template for less detailed commit messages (default: true).
 - `-l` (long): Uses a longer prompt template for more detailed commit messages (slightly more expensive, default: false).
