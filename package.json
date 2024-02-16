@@ -6,6 +6,9 @@
     "bin": {
         "gptcommit": "./index.js"
     },
+    "scripts": {
+        "rmconf": "rm -rf ~/.config/configstore/gpt-commit.json"
+    },
     "keywords": [
         "git",
         "chatGPT",
@@ -24,13 +27,9 @@
     "dependencies": {
         "configstore": "^6.0.0",
         "gpt-tokenizer": "^2.1.2",
-      
-      
         "prompts": "^2.4.2",
-  
         "yargs": "^17.7.2"
     },
-
     "engines": {
         "node": ">=18.0.0"
     },

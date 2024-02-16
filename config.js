@@ -14,7 +14,7 @@ const config = new Configstore('gpt-commit', {
         },
     },
     model: 'gpt-4',
-    showTotalSpend: false,
+    showTotalSpend: true,
     totalSpend: 0,
 })
 

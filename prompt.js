@@ -45,21 +45,18 @@ const doSpendCalculusAndReturnString = async (cost) => {
         }
         let newTotalSpend = totalSpend + cost
         config.set('totalSpend', newTotalSpend)
-        totalStr = `($${newTotalSpend} lifetime)`
+        totalStr = newTotalSpend.toFixed(3)
     }
     return totalStr
 }
 
 const ask = async (message, costStr) => {
+
     const confirm = await prompts({
         type: 'text',
         name: 'value',
-        onState: (state) => {
-            console.log("   w   wrfqwrf")
-            console.log(state)
-        },
         validate: (value) => validate(value),
-        message: `Suggested message:\n\n"${message}"\n\n${costStr}Do you want to use it?\n(Y)es, (n)ew message or (q)uit  [default=yes; (apply and commit)]`,
+        message: `Suggested message:\n\n"${message}"\n\n${costStr} Use it?\n(Y)es, (n)ew message or (q)uit  [default=yes; (apply and commit)]`,
     })
     return confirm.value
 }
@@ -90,7 +87,8 @@ const promptLoop = async (
             usage.completion_tokens
         )
         let totalStr = await doSpendCalculusAndReturnString(cost)
-        let costStr = `This commit cost $${cost} (${totalStr} lifetime)`
+        let costStr = `Cost: $${cost} ($${totalStr} lifetime)`
+
         if (noPrompt && showCost) {
             console.log(costStr)
         }

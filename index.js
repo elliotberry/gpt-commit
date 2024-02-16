@@ -48,7 +48,7 @@ const main = async () => {
                 alias: 'c',
                 description: 'show cost of commit, as well as total spend.',
                 type: 'boolean',
-                default: false
+                default: true,
             })
             .option('long', {
                 alias: 'l',
