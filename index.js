@@ -77,7 +77,24 @@ const main = async () => {
 
         const gitSummary = await getGitSummary(promptTemplate)
         let messages = makeOpenAIMessages(promptTemplate, gitSummary)
-        await checkTotal(messages, promptTemplate.maxTokens)
+        let [canAsk, messagesTotal] = await checkTotal(messages, promptTemplate.maxTokens)
+        if (!canAsk) {
+            if (argv.long) {
+                let newTemplate = await resolvePromptTemplate({long: false})
+                messages = makeOpenAIMessages(newTemplate, gitSummary)
+                [canAsk, messagesTotal] = await checkTotal(messages, newTemplate.maxTokens)
+                if (!canAsk) {
+                    throw new Error(
+                        `Message exceeds token limit. ${messagesTotal} tokens used with this commit, ${newTemplate.maxTokens} available.`
+                    )
+                }
+            }
+            else {
+                throw new Error(
+                    `Message exceeds token limit. ${messagesTotal} tokens used with this commit, ${promptTemplate.maxTokens} available.`
+                )
+            }
+        }
 
         if (!argv.interactive) {
             let [message, costStr] = await getOneMessage(

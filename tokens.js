@@ -14,15 +14,18 @@ const tokenInfo = async (text) => {
  * @throws {Error} If the total number of tokens exceeds the maximum token limit.
  */
 const checkTotal = async (messages, maxTokens) => {
+    let result = true;
     let messagesTotal =
         (await tokenInfo(messages[0].content)) +
         (await tokenInfo(messages[1].content))
 
     if (messagesTotal > maxTokens) {
-        throw new Error(
-            `Message exceeds token limit. ${messagesTotal} tokens used with this commit, ${maxTokens} available.`
-        )
+      //  throw new Error(
+      //      `Message exceeds token limit. ${messagesTotal} tokens used with this commit, ${maxTokens} available.`
+      //  )
+      result = false;
     }
+    return [result, messagesTotal];
 }
 
 export { checkTotal }
