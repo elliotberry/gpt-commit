@@ -1,12 +1,21 @@
 import config from './config.js'
 import makeOpenAIMessages from './make-openai-messages.js'
 
-export const getMessage = async (gitSummary, promptTemplate) => {
+export const getCommitMessage = async (promptTemplate, gitSummary) => {
     let apiKey = process.env['OPENAI_API_KEY'] || config.get('openAIKey')
     if (!apiKey) {
         throw new Error('OPENAI_API_KEY environment variable is not set.')
     }
     try {
+        let requestBody = {
+            model: config.get('model'),
+            messages: makeOpenAIMessages(promptTemplate, gitSummary),
+            max_tokens: promptTemplate.maxTokens,
+            n: 1,
+            stop: null,
+            temperature: 0.7,
+            stream: false
+        };
         const response = await fetch(
             'https://api.openai.com/v1/chat/completions',
             {
@@ -15,20 +24,12 @@ export const getMessage = async (gitSummary, promptTemplate) => {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${process.env['OPENAI_API_KEY'] || config.get('openAIKey')}`,
                 },
-                body: JSON.stringify({
-                    model: config.get('model'),
-                    messages: makeOpenAIMessages(promptTemplate, gitSummary),
-                    max_tokens: promptTemplate.maxTokens,
-                    n: 1,
-                    stop: null,
-                    temperature: 0.7,
-                    stream: false,
-                }),
+                body: JSON.stringify(requestBody),
             }
         )
         if (!response.ok) {
             throw new Error(
-                `HTTP status: ${response.status}  ${response.statusText}- this is likely an issue with the API key.`
+                `HTTP status: ${response.status} ${response.statusText} - this is likely an issue with the API key. You used: ${apiKey} and your body is: ${JSON.stringify(requestBody)}`
             )
         }
         const data = await response.json()

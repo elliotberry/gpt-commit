@@ -1,4 +1,4 @@
-import { getMessage } from './getMessage.js'
+import { getCommitMessage } from './make-api-request.js'
 import { calculateCost } from './calculateCost.js'
 import config from './config.js'
 
@@ -38,7 +38,7 @@ const cleanupMessage = async (message) => {
 
 const getOneMessage = async (promptTemplate, gitSummary) => {
   
-    let [message, usage] = await getMessage(gitSummary, promptTemplate)
+    let [message, usage] = await getCommitMessage(promptTemplate, gitSummary)
     message = await cleanupMessage(message)
     let cost = await calculateCost(usage.prompt_tokens, usage.completion_tokens)
     let totalStr = await doSpendCalculusAndReturnString(cost)

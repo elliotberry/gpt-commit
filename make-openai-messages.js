@@ -8,6 +8,9 @@
  * @returns {Array} - An array of messages for OpenAI chat-based models.
  */
 const makeMessages = (promptTemplate, gitSummary) => {
+  if (!promptTemplate || !promptTemplate.prompt) {
+    throw new Error(`missing promptTemplate or gitSummary`);
+  }
   return [
     {
       role: "system",

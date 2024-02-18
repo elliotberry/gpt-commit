@@ -25,6 +25,22 @@ const resolvePromptTemplate = async (argv) => {
     return promptTemplate
 }
 
+
+const prepareRequest = async (argv) => {
+    const promptTemplate = await resolvePromptTemplate(argv)
+
+    let gitSummary = await getGitSummary(promptTemplate)
+    let messages = makeOpenAIMessages(promptTemplate, gitSummary)
+    let [canAsk, messagesTotal] = await checkTotal(messages, promptTemplate.maxTokens)
+    return [promptTemplate, gitSummary, canAsk, messagesTotal]
+}
+
+const throwOverTokenLimitError = (messagesTotal, promptTemplate) => {
+    throw new Error(
+        `Message exceeds token limit. ${messagesTotal} tokens used with this commit, ${promptTemplate.maxTokens} available.`
+    )
+}
+
 const main = async () => {
     try {
         const argv = yargs(process.argv.slice(2))
@@ -72,26 +88,18 @@ const main = async () => {
             .help('help')
             .alias('help', 'h')
             .parse()
-
-        const promptTemplate = await resolvePromptTemplate(argv)
-
-        const gitSummary = await getGitSummary(promptTemplate)
-        let messages = makeOpenAIMessages(promptTemplate, gitSummary)
-        let [canAsk, messagesTotal] = await checkTotal(messages, promptTemplate.maxTokens)
+        let [promptTemplate, gitSummary, canAsk, messagesTotal] = await prepareRequest(argv)
         if (!canAsk) {
             if (argv.long) {
-                let newTemplate = await resolvePromptTemplate({long: false})
-                messages = makeOpenAIMessages(newTemplate, gitSummary)
-                [canAsk, messagesTotal] = await checkTotal(messages, newTemplate.maxTokens)
+                console.log(`Message exceeds token limit. Changing prompt length...`);
+                [promptTemplate, gitSummary, canAsk, messagesTotal] = await prepareRequest({long: false})
                 if (!canAsk) {
-                    throw new Error(
-                        `Message exceeds token limit. ${messagesTotal} tokens used with this commit, ${newTemplate.maxTokens} available.`
-                    )
+                    throwOverTokenLimitError(messagesTotal, promptTemplate)
                 }
             }
             else {
                 throw new Error(
-                    `Message exceeds token limit. ${messagesTotal} tokens used with this commit, ${promptTemplate.maxTokens} available.`
+                    throwOverTokenLimitError(messagesTotal, promptTemplate)
                 )
             }
         }
