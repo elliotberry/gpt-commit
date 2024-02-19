@@ -13,7 +13,7 @@ const tokenInfo = async (text) => {
  * @param {number} maxTokens - The maximum number of tokens allowed.
  * @throws {Error} If the total number of tokens exceeds the maximum token limit.
  */
-const checkTotal = async (messages, maxTokens) => {
+const checkTotal = async (messages, maxTokens, ) => {
     let result = true;
     let messagesTotal =
         (await tokenInfo(messages[0].content)) +

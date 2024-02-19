@@ -59,9 +59,9 @@ const ifOption = (input, option) => {
  * @returns {Promise<string>} The user's input message.
  * @throws {Error} If an error occurs during the prompt loop.
  */
-const promptLoop = async (gitSummary, promptTemplate) => {
+const promptLoop = async (gitSummary, promptTemplate, provider) => {
     try {
-        let [message, costStr] = await getOneMessage(promptTemplate, gitSummary)
+        let [message, costStr] = await getOneMessage(promptTemplate, gitSummary, provider)
 
         let input = await ask(message, costStr)
         if (ifOption(input, 'quit')) {

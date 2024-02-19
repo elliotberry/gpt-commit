@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 import config from './config.js'
 import { getGitSummary } from './git-ops.js'
 import promptLoop from './prompt.js'
@@ -31,7 +30,11 @@ const prepareRequest = async (argv) => {
 
     let gitSummary = await getGitSummary(promptTemplate)
     let messages = makeOpenAIMessages(promptTemplate, gitSummary)
-    let [canAsk, messagesTotal] = await checkTotal(messages, promptTemplate.maxTokens)
+    let maxTokens = promptTemplate.maxTokens
+    if (argv.useTogetherAI) {
+        maxTokens = 32287
+    }
+    let [canAsk, messagesTotal] = await checkTotal(messages, maxTokens)
     return [promptTemplate, gitSummary, canAsk, messagesTotal]
 }
 
@@ -53,6 +56,12 @@ const main = async () => {
             .option('printOnly', {
                 alias: 'p',
                 description: `don't apply commit. intended for piping elsewhere.`,
+                type: 'boolean',
+                default: false,
+            })
+            .option('useTogetherAI', {
+                alias: 't',
+                description: `use Together AI instead of OpenAI.`,
                 type: 'boolean',
                 default: false,
             })
@@ -88,11 +97,12 @@ const main = async () => {
             .help('help')
             .alias('help', 'h')
             .parse()
+
         let [promptTemplate, gitSummary, canAsk, messagesTotal] = await prepareRequest(argv)
         if (!canAsk) {
             if (argv.long) {
                 console.log(`Message exceeds token limit. Changing prompt length...`);
-                [promptTemplate, gitSummary, canAsk, messagesTotal] = await prepareRequest({long: false})
+                [promptTemplate, gitSummary, canAsk, messagesTotal] = await prepareRequest({long: false, useTogetherAI: argv.useTogetherAI})
                 if (!canAsk) {
                     throwOverTokenLimitError(messagesTotal, promptTemplate)
                 }
@@ -103,11 +113,12 @@ const main = async () => {
                 )
             }
         }
-
+        let provider = argv.useTogetherAI ? 'together' : 'openai'
         if (!argv.interactive) {
             let [message, costStr] = await getOneMessage(
                 promptTemplate,
-                gitSummary
+                gitSummary,
+                provider
             )
             //If we just want our message, log it and it only.
             if (argv.p) {
@@ -124,7 +135,8 @@ const main = async () => {
         } else {
             let finalMessage = await promptLoop(
                 gitSummary,
-                promptTemplate
+                promptTemplate,
+                provider
             )
             await exec(`cd ${process.cwd()} && git commit -m "${finalMessage}"`)
             console.log('Committed with the message "' + finalMessage + '".')

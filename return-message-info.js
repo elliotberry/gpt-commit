@@ -1,7 +1,7 @@
 import { getCommitMessage } from './make-api-request.js'
+import getCommitMessageTogether from './together.js'
 import { calculateCost } from './calculateCost.js'
 import config from './config.js'
-
 
 /**
  * Calculates the spend and returns it as a string to be console logged.
@@ -25,7 +25,7 @@ const doSpendCalculusAndReturnString = async (cost) => {
 
 /**
  * Replaces double quotes with single quotes in the given message.
- * 
+ *
  * @param {string} message - The message to be cleaned up.
  * @returns {Promise<string>} The cleaned up message.
  */
@@ -36,9 +36,20 @@ const cleanupMessage = async (message) => {
     return message
 }
 
-const getOneMessage = async (promptTemplate, gitSummary) => {
-  
-    let [message, usage] = await getCommitMessage(promptTemplate, gitSummary)
+const getOneMessage = async (
+    promptTemplate,
+    gitSummary,
+    provider = 'openai'
+) => {
+    let apiFn = getCommitMessage
+    if (provider === 'openai') {
+        apiFn = getCommitMessage
+    } else if (provider === 'together') {
+        apiFn = getCommitMessageTogether
+    } else {
+        throw new Error(`Invalid provider: ${provider}`)
+    }
+    let [message, usage] = await apiFn(promptTemplate, gitSummary)
     message = await cleanupMessage(message)
     let cost = await calculateCost(usage.prompt_tokens, usage.completion_tokens)
     let totalStr = await doSpendCalculusAndReturnString(cost)
