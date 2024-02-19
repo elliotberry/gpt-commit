@@ -1,4 +1,4 @@
-import { exec } from './exec.js'
+import { execy } from './exec.js'
 
 /**
  * Retrieves the git summary using the provided prompt template.
@@ -10,9 +10,8 @@ import { exec } from './exec.js'
 async function getGitSummary(promptTemplate) {
     try {
     
-        const stdout = await exec(
-            `cd ${process.cwd()} && ${promptTemplate.diffCommand}`
-        )
+        const stdout = await execy(promptTemplate.diffCommand, process.cwd())
+        
         const summary = stdout.trim()
 
         if (summary.length === 0 || summary === "''" || summary === '""' || summary === ' ' || !summary) {
@@ -21,7 +20,7 @@ async function getGitSummary(promptTemplate) {
 
         return summary
     } catch (error) {
-        throw new Error(`in getGitSummary: ${error.message}`)
+        throw new Error(`in getGitSummary: ${error}`)
     }
 }
 
