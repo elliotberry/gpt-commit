@@ -1,4 +1,4 @@
-import { execy } from './exec.js'
+import execy from './exec.js'
 
 /**
  * Retrieves the git summary using the provided prompt template.

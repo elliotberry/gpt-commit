@@ -4,7 +4,7 @@ import { getGitSummary } from './git-ops.js'
 import promptLoop from './prompt.js'
 import { getOneMessage } from './return-message-info.js'
 import yargs from 'yargs/yargs'
-import { exec } from './exec.js'
+import exec from './exec.js'
 import {checkTotal} from './tokens.js'
 import makeOpenAIMessages from './make-openai-messages.js'
 
@@ -127,18 +127,19 @@ const main = async () => {
             }
             //otherwise, automatically commit it.
             else {
-                await exec(`cd ${process.cwd()} && git commit -m "${message}"`)
+                await exec(`git commit -m "${message}"`, process.cwd())
                 console.log(costStr)
                 console.log('Committed with the message "' + message + '".')
                 process.exit(0)
             }
         } else {
+            console.log('Committing the following changes:')
             let finalMessage = await promptLoop(
                 gitSummary,
                 promptTemplate,
                 provider
             )
-            await exec(`cd ${process.cwd()} && git commit -m "${finalMessage}"`)
+            await exec(`git commit -m "${finalMessage}"`, process.cwd())
             console.log('Committed with the message "' + finalMessage + '".')
             process.exit(0)
         }

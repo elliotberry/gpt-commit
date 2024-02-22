@@ -1,7 +1,7 @@
 import { exec as originalExec, spawn } from 'child_process'
 
 
-export const execy = async function (cmdStr, cwd) {
+const execy = async function (cmdStr, cwd) {
     return new Promise(function (res, rej) {
         let cmdArray = cmdStr.split(' ')
         const args = cmdArray.shift()
@@ -26,3 +26,4 @@ export const execy = async function (cmdStr, cwd) {
         })
     })
 }
+export default execy
