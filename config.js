@@ -1,5 +1,7 @@
 import Configstore from 'configstore'
 
+//git diff --stat HEAD^ HEAD | awk '{print $1}' | xargs -I {} git diff HEAD^ HEAD -- {} | grep -E '^\+|^\-|@@' | sed 's/^+/\[Added\] /;s/^-/\[Removed\] /;s/^@@/\[Context\] /'
+
 const config = new Configstore('gpt-commit', {
     promptTemplates: {
         s: {

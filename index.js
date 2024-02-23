@@ -139,7 +139,7 @@ const main = async () => {
                 promptTemplate,
                 provider
             )
-            await exec(`git commit -m "${finalMessage}"`, process.cwd())
+            await exec("git commit -m \"${finalMessage}\"", process.cwd())
             console.log('Committed with the message "' + finalMessage + '".')
             process.exit(0)
         }
