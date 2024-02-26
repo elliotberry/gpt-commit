@@ -1,0 +1,70 @@
+gpt-commit(1) -- Auto-generate succinct commit messages using GPT-4
+===================================================
+
+## SYNOPSIS
+
+**gptcommit** \[**-i**] \[**-p**] \[**-s**] \[**-l**]
+
+## DESCRIPTION
+
+**gpt-commit** is a CLI tool that leverages the GPT-4 model to auto-generate succinct commit messages by analyzing staged changes. It is designed to streamline the commit message creation process for developers, ensuring messages are concise yet informative.
+
+## OPTIONS
+
+- **-i**, **--interactive**
+  Enables interactive mode, prompting the user for a commit message.
+
+- **-p**, **--printOnly**
+  Prints the suggested commit message without user interaction.
+
+- **-s**, **--short**
+  Utilizes a shorter prompt template for generating less detailed commit messages. This is the default setting.
+
+- **-l**, **--long**
+  Employs a longer prompt template for more detailed commit messages, which could be slightly more expensive.
+
+## GETTING STARTED
+
+1. Install the tool globally using Yarn:
+   `yarn global add elliotberry/gpt-commit`
+
+2. Set your OpenAI API key:
+   `export OPENAI_API_KEY=<YOUR_API_KEY>`
+   Tip: Add it to your `.zshrc` or equivalent shell configuration file.
+
+3. Execute **gptcommit** within a repository folder where you have staged changes:
+   `git add ./desired_file`
+   Then run:
+   `gptcommit`
+
+## EXAMPLE
+
+Running `gptcommit` might produce the following interaction:
+
+    Suggested commit:
+    
+    "did basically nothing other than update the readme's spelling".
+    
+    This cost you $350.55. Do you want to use it?
+    (Y)es, (p)rint, (n)ew message or (q)uit  [default=yes]
+
+Responding with:
+
+- **Y/yes/sí**: Commits the suggested message.
+- **q/quit**: Exits the program.
+- **n/new**: Requests another commit message suggestion.
+
+## MESSAGE TEMPLATES
+
+Customize commit message settings via `~/.config/configstore/gpt-commit.json`. Available templates:
+
+- **Short**: Generates a brief summary of code changes within 50 characters.
+- **Long**: Provides a detailed summary, including title and body separated by a blank line, with a focus on the overall changes.
+
+## WARRANTY AND LIABILITY
+
+This program is provided "as-is" and may not be fully reliable. Use at your own risk.
+
+## AUTHORS
+
+Developed by `elliotberry` with the support of OpenAI's GPT-4 model.

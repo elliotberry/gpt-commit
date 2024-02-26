@@ -5,9 +5,8 @@ import promptLoop from './prompt.js'
 import { getOneMessage } from './return-message-info.js'
 import yargs from 'yargs/yargs'
 import exec from './exec.js'
-import {checkTotal} from './tokens.js'
+import { checkTotal } from './tokens.js'
 import makeOpenAIMessages from './make-openai-messages.js'
-
 
 const resolvePromptTemplate = async (argv) => {
     let promptTemplateProp = 's'
@@ -23,7 +22,6 @@ const resolvePromptTemplate = async (argv) => {
     }
     return promptTemplate
 }
-
 
 const prepareRequest = async (argv) => {
     const promptTemplate = await resolvePromptTemplate(argv)
@@ -56,6 +54,12 @@ const main = async () => {
             .option('printOnly', {
                 alias: 'p',
                 description: `don't apply commit. intended for piping elsewhere.`,
+                type: 'boolean',
+                default: false,
+            })
+            .option('debug', {
+                alias: 'd',
+                description: `print debug info.`,
                 type: 'boolean',
                 default: false,
             })
@@ -98,16 +102,22 @@ const main = async () => {
             .alias('help', 'h')
             .parse()
 
-        let [promptTemplate, gitSummary, canAsk, messagesTotal] = await prepareRequest(argv)
+        let [promptTemplate, gitSummary, canAsk, messagesTotal] =
+            await prepareRequest(argv)
         if (!canAsk) {
             if (argv.long) {
-                console.log(`Message exceeds token limit. Changing prompt length...`);
-                [promptTemplate, gitSummary, canAsk, messagesTotal] = await prepareRequest({long: false, useTogetherAI: argv.useTogetherAI})
+                console.log(
+                    `Message exceeds token limit. Changing prompt length...`
+                )
+                ;[promptTemplate, gitSummary, canAsk, messagesTotal] =
+                    await prepareRequest({
+                        long: false,
+                        useTogetherAI: argv.useTogetherAI,
+                    })
                 if (!canAsk) {
                     throwOverTokenLimitError(messagesTotal, promptTemplate)
                 }
-            }
-            else {
+            } else {
                 throw new Error(
                     throwOverTokenLimitError(messagesTotal, promptTemplate)
                 )
@@ -139,7 +149,7 @@ const main = async () => {
                 promptTemplate,
                 provider
             )
-            await exec("git commit -m \"${finalMessage}\"", process.cwd())
+            await exec('git commit -m "${finalMessage}"', process.cwd())
             console.log('Committed with the message "' + finalMessage + '".')
             process.exit(0)
         }
