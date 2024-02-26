@@ -1,26 +1,15 @@
 // Import the necessary modules
 import assert from 'assert/strict';
-import { exec as execPromise } from 'child_process';
-import { promisify } from 'util';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { test } from 'node:test';
 
-// Convert exec to a promise-based function
-const exec = promisify(execPromise);
 
 // Helper to get the directory name for __dirname equivalent in ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Mocks and utilities
-const mockExec = async (command) => {
-  // Mock the exec function for testing without actually executing system commands
-  if (command.includes('git commit -m')) {
-    return { stdout: 'Mock commit executed', stderr: '' };
-  }
-  throw new Error('Command not mocked');
-};
+
 
 // Test cases
 test('resolvePromptTemplate should select the correct template based on arguments', async (t) => {

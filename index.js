@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import config from './config.js'
-import { getGitSummary } from './git-ops.js'
-import promptLoop from './prompt.js'
-import { getOneMessage } from './return-message-info.js'
 import yargs from 'yargs/yargs'
-import exec from './exec.js'
-import { checkTotal } from './tokens.js'
-import makeOpenAIMessages from './make-openai-messages.js'
+import config from './lib/config.js'
+import getGitSummary from './lib/git-ops.js'
+import promptLoop from './lib/prompt.js'
+import getOneMessage from './lib/return-message-info.js'
+import exec from './lib/exec.js'
+import checkTotal from './lib/tokens.js'
+import makeOpenAIMessages from './lib/make-openai-messages.js'
 
 const resolvePromptTemplate = async (argv) => {
     let promptTemplateProp = 's'
