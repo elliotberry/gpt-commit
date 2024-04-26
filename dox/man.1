@@ -1,0 +1,59 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1
+.TH "GPT\-COMMIT" "1" "February 2024" ""
+.SH "NAME"
+\fBgpt\-commit\fR \- Auto\-generate succinct commit messages using GPT\-4
+.SH "SYNOPSIS"
+\fBgptcommit\fR [\fB\-i\fR] [\fB\-p\fR] [\fB\-s\fR] [\fB\-l\fR]
+.SH "DESCRIPTION"
+\fBgpt\-commit\fR is a CLI tool that leverages the GPT\-4 model to auto\-generate succinct commit messages by analyzing staged changes\. It is designed to streamline the commit message creation process for developers, ensuring messages are concise yet informative\.
+.SH "OPTIONS"
+.IP "\(bu" 4
+\fB\-i\fR, \fB\-\-interactive\fR Enables interactive mode, prompting the user for a commit message\.
+.IP "\(bu" 4
+\fB\-p\fR, \fB\-\-printOnly\fR Prints the suggested commit message without user interaction\.
+.IP "\(bu" 4
+\fB\-s\fR, \fB\-\-short\fR Utilizes a shorter prompt template for generating less detailed commit messages\. This is the default setting\.
+.IP "\(bu" 4
+\fB\-l\fR, \fB\-\-long\fR Employs a longer prompt template for more detailed commit messages, which could be slightly more expensive\.
+.IP "" 0
+.SH "GETTING STARTED"
+.IP "1." 4
+Install the tool globally using Yarn: \fByarn global add elliotberry/gpt\-commit\fR
+.IP "2." 4
+Set your OpenAI API key: \fBexport OPENAI_API_KEY=<YOUR_API_KEY>\fR Tip: Add it to your \fB\.zshrc\fR or equivalent shell configuration file\.
+.IP "3." 4
+Execute \fBgptcommit\fR within a repository folder where you have staged changes: \fBgit add \./desired_file\fR Then run: \fBgptcommit\fR
+.IP "" 0
+.SH "EXAMPLE"
+Running \fBgptcommit\fR might produce the following interaction:
+.IP "" 4
+.nf
+Suggested commit:
+
+"did basically nothing other than update the readme's spelling"\.
+
+This cost you $350\.55\. Do you want to use it?
+(Y)es, (p)rint, (n)ew message or (q)uit  [default=yes]
+.fi
+.IP "" 0
+.P
+Responding with:
+.IP "\(bu" 4
+\fBY/yes/sí\fR: Commits the suggested message\.
+.IP "\(bu" 4
+\fBq/quit\fR: Exits the program\.
+.IP "\(bu" 4
+\fBn/new\fR: Requests another commit message suggestion\.
+.IP "" 0
+.SH "MESSAGE TEMPLATES"
+Customize commit message settings via \fB~/\.config/configstore/gpt\-commit\.json\fR\. Available templates:
+.IP "\(bu" 4
+\fBShort\fR: Generates a brief summary of code changes within 50 characters\.
+.IP "\(bu" 4
+\fBLong\fR: Provides a detailed summary, including title and body separated by a blank line, with a focus on the overall changes\.
+.IP "" 0
+.SH "WARRANTY AND LIABILITY"
+This program is provided "as\-is" and may not be fully reliable\. Use at your own risk\.
+.SH "AUTHORS"
+Developed by \fBelliotberry\fR with the support of OpenAI's GPT\-4 model\.

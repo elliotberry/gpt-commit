@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' content='text/html;charset=utf-8'>
+  <meta name='generator' content='Ronn-NG/v0.10.1 (http://github.com/apjanke/ronn-ng/tree/0.10.1)'>
+  <title>gpt-commit(1) - Auto-generate succinct commit messages using GPT-4</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#OPTIONS">OPTIONS</a>
+    <a href="#GETTING-STARTED">GETTING STARTED</a>
+    <a href="#EXAMPLE">EXAMPLE</a>
+    <a href="#MESSAGE-TEMPLATES">MESSAGE TEMPLATES</a>
+    <a href="#WARRANTY-AND-LIABILITY">WARRANTY AND LIABILITY</a>
+    <a href="#AUTHORS">AUTHORS</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>gpt-commit(1)</li>
+    <li class='tc'></li>
+    <li class='tr'>gpt-commit(1)</li>
+  </ol>
+
+  
+
+<h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>gpt-commit</code> - <span class="man-whatis">Auto-generate succinct commit messages using GPT-4</span>
+</p>
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p><strong>gptcommit</strong> [<strong>-i</strong>] [<strong>-p</strong>] [<strong>-s</strong>] [<strong>-l</strong>]</p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p><strong>gpt-commit</strong> is a CLI tool that leverages the GPT-4 model to auto-generate succinct commit messages by analyzing staged changes. It is designed to streamline the commit message creation process for developers, ensuring messages are concise yet informative.</p>
+
+<h2 id="OPTIONS">OPTIONS</h2>
+
+<ul>
+  <li>
+    <p><strong>-i</strong>, <strong>--interactive</strong>
+Enables interactive mode, prompting the user for a commit message.</p>
+  </li>
+  <li>
+    <p><strong>-p</strong>, <strong>--printOnly</strong>
+Prints the suggested commit message without user interaction.</p>
+  </li>
+  <li>
+    <p><strong>-s</strong>, <strong>--short</strong>
+Utilizes a shorter prompt template for generating less detailed commit messages. This is the default setting.</p>
+  </li>
+  <li>
+    <p><strong>-l</strong>, <strong>--long</strong>
+Employs a longer prompt template for more detailed commit messages, which could be slightly more expensive.</p>
+  </li>
+</ul>
+
+<h2 id="GETTING-STARTED">GETTING STARTED</h2>
+
+<ol>
+  <li>
+    <p>Install the tool globally using Yarn:
+<code>yarn global add elliotberry/gpt-commit</code></p>
+  </li>
+  <li>
+    <p>Set your OpenAI API key:
+<code>export OPENAI_API_KEY=&lt;YOUR_API_KEY&gt;</code>
+Tip: Add it to your <code>.zshrc</code> or equivalent shell configuration file.</p>
+  </li>
+  <li>
+    <p>Execute <strong>gptcommit</strong> within a repository folder where you have staged changes:
+<code>git add ./desired_file</code>
+Then run:
+<code>gptcommit</code></p>
+  </li>
+</ol>
+
+<h2 id="EXAMPLE">EXAMPLE</h2>
+
+<p>Running <code>gptcommit</code> might produce the following interaction:</p>
+
+<pre><code>Suggested commit:
+
+"did basically nothing other than update the readme's spelling".
+
+This cost you $350.55. Do you want to use it?
+(Y)es, (p)rint, (n)ew message or (q)uit  [default=yes]
+</code></pre>
+
+<p>Responding with:</p>
+
+<ul>
+  <li>
+<strong>Y/yes/sí</strong>: Commits the suggested message.</li>
+  <li>
+<strong>q/quit</strong>: Exits the program.</li>
+  <li>
+<strong>n/new</strong>: Requests another commit message suggestion.</li>
+</ul>
+
+<h2 id="MESSAGE-TEMPLATES">MESSAGE TEMPLATES</h2>
+
+<p>Customize commit message settings via <code>~/.config/configstore/gpt-commit.json</code>. Available templates:</p>
+
+<ul>
+  <li>
+<strong>Short</strong>: Generates a brief summary of code changes within 50 characters.</li>
+  <li>
+<strong>Long</strong>: Provides a detailed summary, including title and body separated by a blank line, with a focus on the overall changes.</li>
+</ul>
+
+<h2 id="WARRANTY-AND-LIABILITY">WARRANTY AND LIABILITY</h2>
+
+<p>This program is provided "as-is" and may not be fully reliable. Use at your own risk.</p>
+
+<h2 id="AUTHORS">AUTHORS</h2>
+
+<p>Developed by <code>elliotberry</code> with the support of OpenAI's GPT-4 model.</p>
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'></li>
+    <li class='tc'>February 2024</li>
+    <li class='tr'>gpt-commit(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>
